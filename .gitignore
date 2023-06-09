@@ -161,3 +161,15 @@ cython_debug/
 
 # data folder
 data/
+datasets/
+test_video/
+*.jpg
+
+# train folder
+runs/
+
+# weights
+*.pt
+
+# config file
+config.py
