@@ -8,3 +8,6 @@
 
 # test video
 - [test video](https://www.dropbox.com/s/mesjnk350f0yio8/day_city.mp4?dl=0)
+
+# export onnx
+`yolo export model=yolov8n_ct.pt format=onnx opset 12`

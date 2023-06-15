@@ -27,16 +27,27 @@ else:
 cap = cv2.VideoCapture(source)
 print(f">>>> {args.source} video loaded. (integer number means camera source)")
 
+# Define yolov8 classes
+CLASSES_YOLO = ['OFF', 'BRAKE ON']
 
 INPUT_WIDTH = 640
 INPUT_HEIGHT = 640
-SCORE_THRESHOLD = 0.2
-NMS_THRESHOLD = 0.4
-CONFIDENCE_THRESHOLD = 0.4
+SCORE_THRESHOLD = 0.25
+NMS_THRESHOLD = 0.45
+CONFIDENCE_THRESHOLD = 0.5
 OUTPUT_RESIZE_RATIO = 0.7
+TEXT_BOX_HEIGHT_RATIO = 0.17
+TEXT_BOX_WIDTH_RATIO = {
+    CLASSES_YOLO[0]:0.85,
+    CLASSES_YOLO[1]:1.3,
+}
+TEXT_RATIO = 0.005
 
-# Define yolov8 classes
-CLASESS_YOLO = ['On', 'Off']
+
+colors = {
+    CLASSES_YOLO[0]:(23, 204, 146),
+    CLASSES_YOLO[1]:(56, 56, 255),
+}
 
 its = []
 while cap.isOpened():
@@ -48,9 +59,9 @@ while cap.isOpened():
         blob = cv2.dnn.blobFromImage(image, 1/255.0, (INPUT_WIDTH, INPUT_HEIGHT), swapRB=True, crop=False)
         net.setInput(blob)
         st = time.time()
-        preds = net.forward()
+        preds = net.forward()   # (1, 6, 8400)
         it = time.time() - st
-        preds = preds.transpose((0, 2, 1))
+        preds = preds.transpose((0, 2, 1))  # (1, 8400, 6)
 
         # Extract output detection
         class_ids, confs, boxes = list(), list(), list()
@@ -59,18 +70,19 @@ while cap.isOpened():
         x_factor = image_width / INPUT_WIDTH
         y_factor = image_height / INPUT_HEIGHT
 
-        rows = preds[0].shape[0]
+        rows = preds[0].shape[0] # 8400
 
         for i in range(rows):
-            row = preds[0][i]
-            conf = row[4]
+            row = preds[0][i]   # (6,)
+            # conf = row[4]
 
             classes_score = row[4:]
             _,_,_, max_idx = cv2.minMaxLoc(classes_score)
-            class_id = max_idx[1]
-            if (classes_score[class_id] > .25):
+            class_idx = max_idx[1]   # higher class
+            if (classes_score[class_idx] > SCORE_THRESHOLD):
+                conf = classes_score[class_idx]
                 confs.append(conf)
-                label = CLASESS_YOLO[int(class_id)]
+                label = CLASSES_YOLO[int(class_idx)]
                 class_ids.append(label)
 
                 #extract boxes
@@ -82,13 +94,13 @@ while cap.isOpened():
                 box = np.array([left, top, width, height])
                 boxes.append(box)
 
-        r_class_ids, r_confs, r_boxes = list(), list(), list()
+        # r_class_ids, r_confs, r_boxes = list(), list(), list()
 
-        indexes = cv2.dnn.NMSBoxes(boxes, confs, 0.25, 0.45)
+        indexes = cv2.dnn.NMSBoxes(boxes, confs, CONFIDENCE_THRESHOLD, NMS_THRESHOLD)
         for i in indexes:
-            r_class_ids.append(class_ids[i])
-            r_confs.append(confs[i])
-            r_boxes.append(boxes[i])
+            # r_class_ids.append(class_ids[i])
+            # r_confs.append(confs[i])
+            # r_boxes.append(boxes[i])
 
             box = boxes[i]
             left = box[0]
@@ -96,7 +108,9 @@ while cap.isOpened():
             width = box[2]
             height = box[3]
 
-            cv2.rectangle(image, (left, top), (left + width, top + height), (0,255,0), 3)
+            cv2.rectangle(image, (left, top), (left + width, top + height), colors[class_ids[i]], 5)
+            cv2.rectangle(image, (left-3, top - int(width*TEXT_BOX_HEIGHT_RATIO)), (left + int(width*TEXT_BOX_WIDTH_RATIO[class_ids[i]]), top), colors[class_ids[i]], -1)
+            cv2.putText(image, f"{class_ids[i]}  {confs[i]:.2f}", (int(left), int(top - 5)), cv2.FONT_HERSHEY_SIMPLEX, width*TEXT_RATIO, (255, 255, 255), 2)
             Image.fromarray(cv2.cvtColor(image, cv2.COLOR_BGR2RGB))
 
         image = cv2.resize(image, (int(image.shape[1]*OUTPUT_RESIZE_RATIO), int(image.shape[0]*OUTPUT_RESIZE_RATIO)))
