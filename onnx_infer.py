@@ -5,6 +5,7 @@ from PIL import Image
 import argparse
 from glob import glob
 import os
+from datetime import datetime
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--model_size", default='n', type=str)
@@ -20,12 +21,36 @@ if os.path.isfile(weight_path):
     print(f">>>> OpenCU CUDA Device Count: {cv2.cuda.getCudaEnabledDeviceCount()}")
 print(f">>>> {args.model_size} size model loaded.")
     
+current_time = time.time()
+datetime_obj = datetime.fromtimestamp(current_time)
+date_string = datetime_obj.strftime("%Y-%m-%d-%H%M%S")
+
 if len(args.source) == 1:
     source = int(args.source)
+    out_name = date_string
 else:
     source = os.path.join(os.getcwd(), args.source)
+    print(source)
+    out_name = os.path.basename(source).split('.')[0] + '_prediction'
 cap = cv2.VideoCapture(source)
 print(f">>>> {args.source} video loaded. (integer number means camera source)")
+
+out_fps = cap.get(cv2.CAP_PROP_FPS)
+out_width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+out_height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+if len(args.source) == 1:
+    out_fps = 7.
+    
+out_dir = os.path.join(os.getcwd(), 'runs', 'onnx')
+if not os.path.isdir(out_dir):
+    os.makedirs(out_dir)
+    
+
+fourcc = cv2.VideoWriter_fourcc(*'mp4v')
+out = cv2.VideoWriter(filename=os.path.join(out_dir, out_name + '.mp4'), 
+                      fourcc=fourcc, 
+                      fps=out_fps, 
+                      frameSize=(out_width, out_height))
 
 # Define yolov8 classes
 CLASSES_YOLO = ['OFF', 'BRAKE ON']
@@ -117,6 +142,9 @@ while cap.isOpened():
         cv2.imshow("YOLOv8 Inference-ONNX", image)
         print(f'{1/it:.2f} fps')
         its.append(it)
+        
+        out_image = cv2.resize(image, (out_width, out_height))
+        out.write(out_image)
 
         if cv2.waitKey(1) & 0xFF == ord("q"):
             break
