@@ -170,6 +170,16 @@ runs/
 
 # weights
 *.pt
+*.onnx
 
 # config file
 config.py
+
+# latex
+*.aux
+*.fdb_latexmk
+*.fls
+*.log
+*.synctex.gz
+*.bbl
+*.blg
