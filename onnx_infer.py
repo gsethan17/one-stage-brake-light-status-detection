@@ -156,6 +156,7 @@ while cap.isOpened():
 if len(its) > 30:
     print(f'Averate Inference Time: {(sum(its[30:]) / (len(its)-30) * 1000):.2f} ms')
 cap.release()
+out.release()
 cv2.destroyAllWindows()
             
 
