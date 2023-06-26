@@ -43,7 +43,7 @@ out_fps = cap.get(cv2.CAP_PROP_FPS)
 out_width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
 out_height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
 if len(args.source) == 1:
-    out_fps = 7.
+    out_fps = 4.
     
 out_dir = os.path.join(os.getcwd(), 'runs', 'onnx')
 if not os.path.isdir(out_dir):
