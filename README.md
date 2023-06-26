@@ -11,3 +11,6 @@
 
 # export onnx
 `yolo export model=yolov8n_ct.pt format=onnx opset 12`
+
+# inference test
+`python onnx_infer.py --source {file path or # of camera} --is_show {yes or no} --is_to_end {yes or no}`

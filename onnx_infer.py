@@ -5,11 +5,13 @@ from PIL import Image
 import argparse
 from glob import glob
 import os
-from datetime import datetime
+from datetime import datetime, timedelta
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--model_size", default='n', type=str)
 parser.add_argument("--source", default='0', type=str)
+parser.add_argument("--is_to_end", default='yes', type=str)
+parser.add_argument("--is_show", default='yes', type=str)
 args = parser.parse_args()
 
 weight_path = os.path.join(os.getcwd(), f'yolov8{args.model_size}_ct.onnx')
@@ -23,6 +25,7 @@ print(f">>>> {args.model_size} size model loaded.")
     
 current_time = time.time()
 datetime_obj = datetime.fromtimestamp(current_time)
+# datetime_obj = datetime_obj + timedelta(hours=9)
 date_string = datetime_obj.strftime("%Y-%m-%d-%H%M%S")
 
 if len(args.source) == 1:
@@ -31,7 +34,8 @@ if len(args.source) == 1:
 else:
     source = os.path.join(os.getcwd(), args.source)
     print(source)
-    out_name = os.path.basename(source).split('.')[0] + '_prediction'
+    out_name = os.path.basename(source).split('.')[0] + '_' + date_string
+    
 cap = cv2.VideoCapture(source)
 print(f">>>> {args.source} video loaded. (integer number means camera source)")
 
@@ -45,6 +49,9 @@ out_dir = os.path.join(os.getcwd(), 'runs', 'onnx')
 if not os.path.isdir(out_dir):
     os.makedirs(out_dir)
     
+    
+
+
 
 fourcc = cv2.VideoWriter_fourcc(*'mp4v')
 out = cv2.VideoWriter(filename=os.path.join(out_dir, out_name + '.mp4'), 
@@ -53,7 +60,7 @@ out = cv2.VideoWriter(filename=os.path.join(out_dir, out_name + '.mp4'),
                       frameSize=(out_width, out_height))
 
 # Define yolov8 classes
-CLASSES_YOLO = ['OFF', 'BRAKE ON']
+CLASSES_YOLO = ['BRAKE OFF', 'BRAKE ON']
 
 INPUT_WIDTH = 640
 INPUT_HEIGHT = 640
@@ -63,7 +70,8 @@ CONFIDENCE_THRESHOLD = 0.5
 OUTPUT_RESIZE_RATIO = 0.7
 TEXT_BOX_HEIGHT_RATIO = 0.17
 TEXT_BOX_WIDTH_RATIO = {
-    CLASSES_YOLO[0]:0.85,
+    # CLASSES_YOLO[0]:0.85,
+    CLASSES_YOLO[0]:1.3,
     CLASSES_YOLO[1]:1.3,
 }
 TEXT_RATIO = 0.005
@@ -73,6 +81,8 @@ colors = {
     CLASSES_YOLO[0]:(23, 204, 146),
     CLASSES_YOLO[1]:(56, 56, 255),
 }
+
+count = 0
 
 its = []
 while cap.isOpened():
@@ -139,7 +149,9 @@ while cap.isOpened():
             Image.fromarray(cv2.cvtColor(image, cv2.COLOR_BGR2RGB))
 
         image = cv2.resize(image, (int(image.shape[1]*OUTPUT_RESIZE_RATIO), int(image.shape[0]*OUTPUT_RESIZE_RATIO)))
-        cv2.imshow("YOLOv8 Inference-ONNX", image)
+        
+        if args.is_show == 'yes':
+            cv2.imshow("YOLOv8 Inference-ONNX", image)
         print(f'{1/it:.2f} fps')
         its.append(it)
         
@@ -148,6 +160,11 @@ while cap.isOpened():
 
         if cv2.waitKey(1) & 0xFF == ord("q"):
             break
+        
+        if args.is_to_end != 'yes':
+            count += 1
+            if count > 100:
+                break
 
     else:
         break
