@@ -10,7 +10,7 @@
 - [test video](https://www.dropbox.com/s/mesjnk350f0yio8/day_city.mp4?dl=0)
 
 # export onnx
-`yolo export model=yolov8n_ct.pt format=onnx opset 12`
+`yolo export model=yolov8n_ct.pt format=onnx opset=12`
 
 # inference test
 `python onnx_infer.py --source {file path or # of camera} --is_show {yes or no} --is_to_end {yes or no}`

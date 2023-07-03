@@ -66,7 +66,7 @@ INPUT_WIDTH = 640
 INPUT_HEIGHT = 640
 SCORE_THRESHOLD = 0.25
 NMS_THRESHOLD = 0.45
-CONFIDENCE_THRESHOLD = 0.5
+CONFIDENCE_THRESHOLD = 0.35
 OUTPUT_RESIZE_RATIO = 0.7
 TEXT_BOX_HEIGHT_RATIO = 0.17
 TEXT_BOX_WIDTH_RATIO = {
@@ -158,8 +158,9 @@ while cap.isOpened():
         out_image = cv2.resize(image, (out_width, out_height))
         out.write(out_image)
 
-        if cv2.waitKey(1) & 0xFF == ord("q"):
-            break
+        if args.is_show == 'yes':
+            if cv2.waitKey(1) & 0xFF == ord("q"):
+                break
         
         if args.is_to_end != 'yes':
             count += 1
@@ -174,6 +175,7 @@ if len(its) > 30:
     print(f'Averate Inference Time: {(sum(its[30:]) / (len(its)-30) * 1000):.2f} ms')
 cap.release()
 out.release()
-cv2.destroyAllWindows()
+if args.is_show == 'yes':
+    cv2.destroyAllWindows()
             
 
