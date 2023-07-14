@@ -75,7 +75,7 @@
 \Title{One-Stage Brake Light Status Detection based on YOLOv8}
 
 % MDPI internal command: Title for citation in the left column
-\TitleCitation{Title}
+\TitleCitation{One-Stage Brake Light Status Detection based on YOLOv8}
 
 % Author Orchid ID: enter ID or remove command
 \newcommand{\orcidauthorA}{0000-0002-0498-5631} % Add \orcidA{} behind the author's name
@@ -114,21 +114,22 @@ $^{2}$ \quad Department of Automobile and IT Convergence, Kookmin University, 77
 
 % Abstract (Do not insert blank lines, i.e. \\) 
 \abstract{
-    Despite the advancement of advanced driver assistance systems (ADAS) and autonomous driving system, surpassing the threshold of level 3 of driving automation is not an easy task.
-    Level 3 of driving automation require assuming full responsibility for the vehicle's actions, which necessitates the acquisition of safer and more interpretable cues.
+    Despite the advancement of advanced driver assistance systems (ADAS) and autonomous driving systems, surpassing the threshold of level 3 of driving automation remains a challenging task.
+    Level 3 of driving automation requires assuming full responsibility for the vehicle's actions, necessitating the acquisition of safer and more interpretable cues.
     % To achieve level 3 of driving automation, it is necessary to ensure not only safety but also interpretability.
     % In order to secure these features, it is crucial to incorporate brake light status detection, which is one of the most relied-upon visual cues by human driver.
-    To approach level 3 of driving automation, we propose a novel method for detecting driving vehicles and their brake light status, which is one of the most relied-upon visual cues by human driver.
+    To approach level 3, we propose a novel method for detecting driving vehicles and their brake light status, which is a crucial visual cue relied upon by human drivers.
     % In this paper, we propose a method to detect driving vehicles and their brake light status based on 
     % As Advanced driver assistance systems (ADAS) and autonomous driving technologies advance, the amount of time vehicles drive themselves insteaed of drivers is increasing.
     % However, due to the conflict between sensory inputs when the technology is driving and expectation based on past experiences, passengerts often experience motion sickness.
     % To address this issue, it is necessary for the technology to drive like a human. 
     % In this paper, we propose a method to detect driving vehicles and their brake light status, which is one of the most relied-upon visual cues by human driver.
-    Firstly, we propose a fast and accurate one-stage brake light status detection network based on YOLOv8. We conduct transfer learning to enable YOLOv8 to detect not only the driving vehicle but also its brake light status through a custom dataset.
-    This paper also introduces the custom dataset that includes over 11K forward images along with manual annotations.
-    We evaluate our proposed method's detection performance and inference time on an edge device.
-    The experimental results show a high detection performance with an mAP50 of $0.766$ to $0.793$ on the test dataset and short inference time with $133.30$ ms on the Jetson Nano device.
-    Overall, the proposed method which achieves high accurcay and fast inferemce time in detection brake light status, can be effectively contributed to improving safety, interpretability, and comfortability by providing valuable input information for ADAS and autonomous driving technologies.
+    Our proposal consists of two main components. 
+    First, we introduce a fast and accurate one-stage brake light status detection network based on YOLOv8. Through transfer learning using a custom dataset, we enable YOLOv8 to detect not only detect the driving vehicle but also determine its brake light status.
+    Furthermore, we present the custom dataset, which includes over $11,000$ forward images along with manual annotations.
+    We evaluate the performance of our proposed method in terms of detection accuracy and inference time on an edge device.
+    The experimental results demostrate high detection performance with an mAP50 (mean average precision at IoU threshold of $0.50$) ranging from $0.766$ to $0.793$ on the test dataset, along with a short inference time of $133.30$ ms on the Jetson Nano device.
+    In conclusion, our proposed method which achieves high accuracy and fast inference time in detecting brake light status. This contribution effectively improves safety, interpretability, and comfortability by providing valuable input information for ADAS and autonomous driving technologies.
 }
 
 % Keywords
@@ -410,7 +411,7 @@ $^{2}$ \quad Department of Automobile and IT Convergence, Kookmin University, 77
 \authorcontributions{Conceptualization, S.L.; methodology, G.O.; software, G.O.; validation, S.L.; formal analysis, G.O.; investigation, S.L. and G.O.; resources, S.L and G.O.; data curation, G.O.; writing---original draft preparation, G.O.; writing---review and editing, S.L.; visualization, G.O.; supervision, S.L.; project administration, S.L.; funding acquisition, S.L. All authors have read and agreed to the published version of the manuscript.}
 
 % \funding{Please add: ``This research received no external funding'' or ``This research was funded by NAME OF FUNDER grant number XXX.'' and  and ``The APC was funded by XXX''. Check carefully that the details given are accurate and use the standard spelling of funding agency names at \url{https://search.crossref.org/funding}, any errors may affect your future funding.}
-\funding{This work was supported partially by Korea Institute of Police Technology (KIPoT) grant funded by the Korea government(KNPA) (No.092021C26S03000, Development of infrastructure information integration and management technologies for real time traffic safety facility operation) and the BK21 Four Program (5199990814084) of the National Research Foundation of Korea (NRF) funded by the Ministry of Education, Korea.}
+\funding{This work was supported by Korea Institute of Police Technology (KIPoT) grant funded by the Korea government(KNPA) (No.092021C26S03000, Development of infrastructure information integration and management technologies for real time traffic safety facility operation) and the BK21 Four Program (5199990814084) of the National Research Foundation of Korea (NRF) funded by the Ministry of Education, Korea.}
 
 % \institutionalreview{In this section, you should add the Institutional Review Board Statement and approval number, if relevant to your study. You might choose to exclude this statement if the study did not require ethical approval. Please note that the Editorial Office might ask you for further information. Please add “The study was conducted in accordance with the Declaration of Helsinki, and approved by the Institutional Review Board (or Ethics Committee) of NAME OF INSTITUTE (protocol code XXX and date of approval).” for studies involving humans. OR “The animal study protocol was approved by the Institutional Review Board (or Ethics Committee) of NAME OF INSTITUTE (protocol code XXX and date of approval).” for studies involving animals. OR “Ethical review and approval were waived for this study due to REASON (please provide a detailed justification).” OR “Not applicable” for studies not involving humans or animals.}
 \institutionalreview{Not applicable}

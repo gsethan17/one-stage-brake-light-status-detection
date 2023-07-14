@@ -1,25 +1,21 @@
 \section{Experiments}
 \label{sec:experiments}
 
-The experimental evaluation of the proposed method are presented in this section. 
-Section \ref{sec:exp_pre} introduces the details of custom dataset collected in the manner described in Section \ref{sec:proposed} and pre-processing.
-Transfer learning of YOLOv8 using the custom dataset is covered in detail in Section \ref{sec:exp_transfer}.
-Section \ref{sec:exp_results} describes the experimental results in detail.
+The experimental evaluation of the proposed method is presented in this section. 
+Section \ref{sec:exp_pre} provides details about the custom dataset collected as described in Section \ref{sec:proposed}, as well as preprocessing steps.
+Section \ref{sec:exp_transfer} focuses on the transfer learning process of YOLOv8 using the custom dataset.
+The experimental results are presented in detail in Section \ref{sec:exp_results}.
 
 \subsection{Custom dataset \& Pre-processing}
 \label{sec:exp_pre}
-A large-scale custom dataset of over 16 hours was collected. 
-Videos from dashboard cameras were collected through real road driving for more than 16 hours, and total of more than 11K images were secured by setting the time interval $T$ to 5 seconds.
-All secured images were manually annotated for the bounding box of the driving vehicle and the brake light status of each vehicle.
-Total number of annotations are more than 30K.
-We have split the collected dataset into train and test dataset, taking into consideration several factors during the split process.
-These factors include data consistency, exclusion of duplicate or similar data, and data balance.
-To ensure data diversity, driving scenarios include various environments such as daytime, nighttime, city, highway, and tunnel.
-To address data balance, we took precautions to prevent any bias towards a single category.
+A large-scale custom dataset consisting over 16 hours of data was collected. 
+Videos recorded from dashboard cameras during real road driving were utilized, resulting in a total of more than $11,000$ images.
+These images were obtained by setting the time interval $T$ to $5$ seconds.
+Manual annotation was performed on all images to label the bounding box of the driving vehicle and the brake light status of each vehicle.
+The total number of annotations exceeded $30,000$.
+To ensure a balanced and diverse dataset, various driving scenarios were included, such as daytime, nighttime, city, highway, and tunnel environments.
+Precautions were taken to avoid bias toward any specific category, ensuring information about the number of images and annotations in the train and test sets for each category of brake light status.
 The details of numbers of images and annotations in the train and test sets in each category of brake light status are given in Table \ref{tab:dataset}.
-
-
-
 
 \begin{table}[h]
     \caption{Details of train and test datasets}
@@ -39,23 +35,6 @@ The details of numbers of images and annotations in the train and test sets in e
     % }
 \end{table}
 
-
-
-For our custom dataset to be trainable with YOLOv8 and get results showing robust performance, several pre-processing is required.
-The first essential processes are image resizing and normalization.
-Since the shape of the input image must always be the same, the width and height of all images were resized to $I_{w}$ and $I_{h}$. In this study, both $I_{w}$ and $I_{h}$ were defined as $640$. 
-In the case of image normalization, min-max normalization was applied to all pixel values as follows:
-
-\begin{equation}
-    x_{norm} = \frac{x - x_{min}}{x_{max} - x_{min}}
-\end{equation}
-where $x$ and $x_{norm}$ are origin and normalized pixel value, respectively and $x_{max}$ and $x_{min}$ are the maximum and minimum pixel value of the image, respectively.
-As usual, in this study, $x_{max}$ and $x_{min}$ were defined as $255.0$ and $0.0$.
-In addition, various data augmentation techniques were applied for robust inference performance.
-Random horizontal flip and crop image were performed to create image that was different from the collected images and could actually exist.
-For robust detection even in occlusion, the random black-box cutout is also applied.
-Lastly, in terms of securing robustness for various cameras, the quality of input images was degraded in various ways.
-
 \begin{figure}[b!]%
 
     \subfloat{{\includegraphics[height=4.5cm]{fig/image20.png} }}%
@@ -66,17 +45,54 @@ Lastly, in terms of securing robustness for various cameras, the quality of inpu
     \subfloat{{\includegraphics[height=4.5cm]{fig/image24.png} }}%
     \subfloat{{\includegraphics[height=4.5cm]{fig/image25.png} }}%
 
-\caption{Pre-processed input images of custom dataset}
+\caption{Preprocessed input images of custom dataset}
 \label{fig:custom_dataset}%
 \end{figure}
 
-As mentioned in Section \ref{sec:method_dataset}, the dashboard cameras used for image acquisition includes various post-processing methods to acquire high-quality images.
-Therefore, brightness change, blur, and noise injection methods were randomly applied to ensure robust performance of the trained network even in general cameras.
-Examples of pre-processed image are shown in Figure \ref{fig:custom_dataset}.
-All pre-processing processes utilized Roboflow \cite{roboflow}, which is a comprehensive platform for computer vision and image processing task, and pre-processed train dataset is publicly available \cite{brake-light-detection_dataset}.
+To make our custom dataset trainable with YOLOv8 and achieve robust performance, several preprocessing steps are necessary.
+The first crucial processes involve image resizing and normalization.
+In order to maintain a consistent input size, the width and height of all images were resized to $I_{w}$ and $I_{h}$, respectively. 
+In this study, both $I_{w}$ and $I_{h}$ were defined as $640$.
+Regarding image normalization, min-max normalization was applied to normalize the pixel values.
+The normalization precess ensure that all pixel values fall within a specific range, typically between $0$ and $1$, and is performed as follows:
+
+\begin{equation}
+    x_{norm} = \frac{x - x_{min}}{x_{max} - x_{min}}
+\end{equation}
+
+where $x$ and $x_{norm}$ are origin and normalized pixel value, respectively and $x_{max}$ and $x_{min}$ are the maximum and minimum pixel value of the image, respectively.
+In this study, the values for $x_{max}$ and $x_{min}$ were set to $255.0$ and $0.0$, respectively, following the usual convention.
+Furthermore, various data augmentation techniques were applied to enhance the robustness of the inference performance.
+Random horizontal flipping and image cropping were performed to generate variations of the collected images that could realistically occur.
+To improve detection performance in cases of occlusion, random black-box cutout augmentation was also applied.
+Finally, to ensure robustness across different camera setups, the quality of the input images was intentionally degraded using various methods.
+
+
+
+As stated in Section \ref{sec:method_dataset}, the dashboard cameras used for image acquisition are equipped with various postprocessing methods to captured high-quality images.
+to ensure the robust performance of the trained network even with general cameras, random modifications such as brightness changes, blur, and noise injection were applied to the images.
+Figure \ref{fig:custom_dataset} provides examples of preprocessed images.
+All preprocessing steps were performed using Roboflow \cite{roboflow}, a comprehensive platform for computer vision and image processing tasks.
+The preprocessed train dataset is publicly available for access \cite{brake-light-detection_dataset}.
+
+
+
+\subsection{Transfer learning}
+\label{sec:exp_transfer}
+In this study, we conducted transfer learning on all models provided by YOLOv8 \cite{YOLOv8} to develop a detection network that achieves real-time inference in a driving vehicle while maintaining accurate detection.
+The YOLOv8 architecture offers five different models of varying sizes, ranging from the smallest model (YOLOv8n) to the largest model (YOLOv8x), as shown in Table \ref{tab:yolov8}.
+To ensure consistency, the same set of hyperparameters was applied to all models during training.
+A random 20\% of the train dataset was set aside as the validation dataset for monitoring the training progress.
+The initial parameter values for each model were obtained from the pretrained parameters officially provided by YOLOv8.
+The training process consisted fo $300$ iterations, with a patience value of $20$.
+If there was no observable improvement in the validation loss over the most recent $20$ iterations, the training was terminated early to save time and resources.
+Stochastic gradient descent (SGD) optimizer with a learning rate of $0.01$ was used, incorporating both momentum and Nesterov Accelerated Gradient (NAG) techniques \cite{sutskever2013importance} with a momentum coefficient of $0.937$.
+The training loss was calculated using three loss function: binary cross-entropy, CIoU, and DFL.
+The weighting factors assigned th these loss functions were $0.5$, $7.5$, and $1.5$, respectively.
+These factors were chosen to balance the impact of each loss function during training.
 
 \begin{table}[h]
-    \caption{Official deplyed models of YOLOv8}
+    \caption{Official deployed models of YOLOv8}
     \label{tab:yolov8}
     % \resizebox{\textwidth}{!}{%
     \begin{tabular}{lcc}
@@ -94,22 +110,6 @@ All pre-processing processes utilized Roboflow \cite{roboflow}, which is a compr
     \end{tabular}%
     % }
 \end{table}
-
-\subsection{Transfer learning}
-\label{sec:exp_transfer}
-YOLOv8 \cite{YOLOv8} has officially deployed a total of five models of different sizes, from the smallest model, YOLOv8n, to the largest model, YOLOv8x as described in Table \ref{tab:yolov8}.
-In this study, the objective is to develop a detection network that can perform real-time inference in a driving vehicle while achieving accurate detection. 
-To achieve this, we conducted transfer learning on all models provided by YOLOv8 and derived optimal trade-off performance by experimenting with detection performance and inference speed.
-
-The hyperparameters required for training were applied equally to all models, and the details are described in this paragraph.
-20\% of train dataset had been randomly split into the validation dataset.
-The initial value of each model parameter used pre-trained parameters officially provided by YOLOv8 \cite{YOLOv8}.
-Number of iterations and patience were defined as $300$ and $20$, respectively.
-During the 300 iterations, if there is no observable improvement among the latest 20 iterations, the learning was terminated to reduce the consumption of time and resources.
-We used a stochastic gradient descent (SGD) optimizer with $0.01$ learning rate.
-The optimizer incorporated both momentum and Nesterov Accelerated Gradient (NAG) techniques \cite{sutskever2013importance} and the momentum coefficient was defined as $0.937$.
-The weighting factors assigned to the three loss functions used in training, binary cross-entropy, CIoU, and DFL, are $0.5$, $7.5$, and $1.5$, respectively.
-
 
 \begin{figure}[t]%
 
@@ -132,26 +132,39 @@ The weighting factors assigned to the three loss functions used in training, bin
 
 \subsection{Results}
 \label{sec:exp_results}
-In this section, the qualitative and quantitative evaluation results of the trained detection models were described.
-Qualitative analysis confirmed that the trained detection models accurately detect the bounding boxes of driving vehicles and classify their brake light status as either the brake on or off in various road environments. 
-The models exhibited robust performance in highway, city, tunnel, and nighttime driving scenarios, demonstrating excellent detection results not only conventional passenger cars but also motorcycles, buses, trucks and special vehicles.
-The qualitative detection results are shown in Figure \ref{fig:detection}.
+In this section, the evaluation results of the trained detection models are presented, both qualitatively and quantitatively.
+Qualitative analysis confirmed that the trained detection models accurately detect the bounding boxes of driving vehicles and classify their brake light status (on or off) in various road environments.
+The models demonstrated robust performance in different driving scenarios, including highway, city, tunnel, and nighttime driving.
+The qualitative detection results, showcasing the accurate detection of different types of vehicles, including passenger cars, motorcycles, buses, trucks, and special vehicles, are shown in Figure \ref{fig:detection}.
 
-
-The driving vehicle and brake light status detection performance of each model that has completed transfer learning is evaluated by calculating the mean average precision (mAP) in the testset.
-We calculated a total of two mAP: mAP50 and mAP50-95.
-mAP50 represents the mAP at an intersection over union (IoU) threshold of $0.5$. Here, the IoU threshold indicates the ratio of the overlapping area between the predicted bounding boxes and the ground truth labels.
-On the other hand, mAP50-95 represents the average precision over a range of IoU thresholds from $0.5$ to $0.95$ with a step size $0.05$. 
-Both of mAP are commonly used as a comprehensive measure to assess the overall performance of object detection models.
+The evaluation of the driving vehicle and brake light status detection performance of each model that underwent transfer learning is conducted by calculating the mean average precision (mAP) on the testset.
+Two mAP values are calculated: mAP50 and mAP50-95.
+mAP50 represents the average presicion at an intersection over union (IoU) threshold of $0.5$. The IoU threshold measures the overlap between the predicted bounding boxes and the ground truth labels, indicating how well the predicted boxes align with the actual objects.
+mAP50-95 represents the average precision over a range of IoU thresholds from $0.5$ to $0.95$, with a step size of $0.05$. 
+This metric provides comprehensive assessment of the detection model's performance across different levels of overlap.
+Both mAP50 and mAP50-95 are commonly used metrics to evaluate the overall performance of object detection models.
 
 \begin{figure}[t]%
 
     \subfloat[\centering mAP50 on the entire testset]{{\includegraphics[height=5cm]{fig/bar_map50.png} }}%
     \subfloat[\centering mAP50-95 on the entire testset]{{\includegraphics[height=5cm]{fig/bar_map50-95.png} }}%
 
-\caption{Detection performance on the entire testset. The y-axis represents the detection accuracy, and the x-axis lists the YOLOv8 models, with larger models positioned towards the right. Each model is depicted with three bars, showcasing the detection performance for brake light off class, brake light on class, and total class, respectively. Single line plot highlights the difference in detection performance by models for total class.}
+\caption{Detection performance on the entire testset. The y-axis represents the detection accuracy, and the x-axis lists the YOLOv8 models, with larger models positioned toward the right. Each model is depicted with three bars, showcasing the detection performance for brake light off class, brake light on class, and total class, respectively. Single line plot highlights the difference in detection performance by models for total class.}
 \label{fig:test_results}%
 \end{figure}
+
+
+
+Figure \ref{fig:test_results} presents the detection performance of each trained model, showcasing the results for mAP50 and mAP50-90 in Figure \ref{fig:test_results}-(a) and (b) respectively.
+The detection performance for each individual classes, brake light off and brake light on, is represented by blue and red bars respectively. 
+The overall detection performance for all classes is shown by the purple bar, with a purple line plot illustrating the trend of performance differences across models.
+Both mAP50 and mAP50-95 exhibit similar overall trands, although they differ in scale.
+As expected, the detection performance for all classes generally increases as the model size increases.
+However, the YOLOv8s model shows a slightly lower performance increase, primarily due to its lower brake light on class detection performance.
+Comparing the mAP50 values for each class, it can be observed that all models, except for YOLOv8s, have higher detection performance for the brake light on class compared to the brake light off class.
+Overall, the proposed methodology achieved mAP50 values ranging from $0.766$ to $0.793$ and mAP50-95 values ranging from $0.505$ to $0.532$.
+Considering the recent benchmarking performance of MS-COCO \cite{lin2014microsoft}, which is one of the leading object detection, with mAP50 values ranging form $71.9$ to $77.0$ and mAP50-95 values ranging from $57.7$ to $58.8$, the proposed methodology demonstrates significant results \cite{coco_benchmark, zou2023object}.
+Detailed detection performance for each model and class can be found in Table \ref{tab:total}.
 
 \begin{table}[!h]
     \caption{Results of the entire testset}
@@ -186,16 +199,11 @@ Both of mAP are commonly used as a comprehensive measure to assess the overall p
     % }
 \end{table}
 
-Figure \ref{fig:test_results} presents the detection performance of each trained model.
-Figure \ref{fig:test_results}-(a) and (b) are the plot for mAP50 and mAP50-95, respectively.
-Each individual classes, brake light off and on, detection performance are shown in blue and red bars, respectively.
-The detection performance for all classes is shown in purple bar with the purple line plot to effectively show the trend of performance differences by model.
-Although mAP50 and mAP50-95 differ in scale, they show almost similar overall trends.
-As expected, detection performance for all classes increases as the size of the model increases.
-The performance increase of the YOLOv8s model tends to be slightly lacking, which is analyzed to be due to the lack of brake light on class detection performance.
-In fact, comparing the mAP50 for each class, the brake light on class detection performance of all models except YOLOv8s is higher than the brake light off class.
-As a result, we achieved mAP50 from $0.766$ to $0.793$ and mAP50-95 from $0.505$ to $0.532$.
-Considering the recent benchmarking performance of MS-COCO \cite{lin2014microsoft}, which is one of the most prominent object detection datasets today, with mAP50 of $71.9$ to $77.0$ and mAP50-95 of $57.7$ to $58.8$ \cite{coco_benchmark, zou2023object}, our proposed methodology can be regarded as yielding significant results. Detailed detection performance for each model and class is described in Table \ref{tab:total}.
+
+In Figure \ref{fig:test_results}, it was observed that the brake light on detection performance for the brake light on class was generally better than that for the brake light off.
+However, since the two classes are distinguished solely based on the brightness of the brake light and not the shape or form of the vehicle, it is possible to hypothesize that ambient illumination can affect the detection performance. 
+To verify this hypothesis, the test dataset was split into two types based on ambient light levels: Day, representing images taken during daytime with high ambient illumination, and Night, representing images taken at night or in tunnels with low ambient illumination.
+The number of images and annotations for each type are provided in Table \ref{tab:test_dataset}.
 
 \begin{table}[h]
     \caption{Details of test dataset}
@@ -215,12 +223,6 @@ Considering the recent benchmarking performance of MS-COCO \cite{lin2014microsof
     % }
 \end{table}
 
-In Figure \ref{fig:test_results}, it was confirmed that brake light on detection performance was better than brake light off, but the two classes should be distinguished only by the brightness of the brake light, not the difference in the shape or form of the vehicle. 
-Therefore, it is possible to establish a hypothesis that the ambient illumination can affect the detection performance, and to verify it, it is necessary to compare the detection performance in environments with different ambient illumination.
-Then, we split the test dataset into two types according to the ambient light level. 
-Images taken during daytime with high ambient illumination were named Day. 
-Conversely, images taken at night or in tunnels with low ambient illumination were named Night, and the number of images and annotations are described in Table \ref{tab:test_dataset}.
-
 \begin{figure}[t]%
 
     \subfloat[mAP50 on the Day testset]{{\includegraphics[height=5cm]{fig/bar_day_map50.png} }}%
@@ -233,21 +235,22 @@ Conversely, images taken at night or in tunnels with low ambient illumination we
 \label{fig:dayNnight}%
 \end{figure}
 
-Figure \ref{fig:dayNnight} presents the detection performance by each class on the Day/Night split testset. 
-Y-axis of Figure \ref{fig:dayNnight}-(a) and (b) represents mAP50 and y-axis of (c) and (d) represents mAP50-95.
-Figure \ref{fig:dayNnight}-(a) and (c) shows the performance on the day testset and (b) and (d) shows the performance on the night testset.
-On the day testset, brake light off detection performance is better than on detection.
-On the night testset, brake light on detection performance is superior to off detection.
-The brake light off class, which had been well detected in an environment with high ambient light, deteriorated detection performance as the ambient light decreases.
-Conversely, the brake light on class, which had showed relatively low detection performance in an environment with high ambient light, showed high detection performance when the ambient light is low.
-The difference in performance due to the difference in ambient illumination is much larger in the brake light off class.
-Detailed detection performance comparison for ambient illumination difference for each model and class is described in Table \ref{tab:dayNnight}.
+Figure \ref{fig:dayNnight} depicts the detection performance for each class on the Day/Night split test dataset. 
+In Figure \ref{fig:dayNnight}-(a) and (b), mAP50 is plotted, while in Figure \ref{fig:dayNnight}-(c) and (d), mAP50-95 is plotted.
+Figure \ref{fig:dayNnight}-(a) and (c) show the performance on the Day testset, while (b) and (d) show the performance on the Night testset.
+On the Day testset, the detection performance for the brake light off class is better than that for the brake light on class.
+Conversely, on the Night testset, the detection performance for the brake light on class is superior to that for the brake light off class.
+The brake light off class, which was well detected in an environment with high ambient light, experienced a decline in detection performance as the ambient light decreased.
+On the other hand, the brake light on class, which initially exhibited relatively low detection performance in an environment with high ambient light, demonstrated high detection performance when the ambient light was low.
+The difference in performance due to ambient illumination is more pronounced in the brake light off class.
+Detailed detection performance comparisons for ambient illumination difference for each model and class can be found in Table \ref{tab:dayNnight}.
 
 
-\begin{table}[!b]
+\begin{table}[!h]
     \caption{Results of comparison for ambient illumination difference}
     \label{tab:dayNnight}
     % \resizebox{\textwidth}{!}{%
+    \renewcommand{\arraystretch}{0.94}
     \begin{tabular}{llcccc}
     \toprule
     \multicolumn{1}{c}{\multirow{2}{*}{Model}} & \multicolumn{1}{c}{\multirow{2}{*}{Class}} & \multicolumn{2}{c}{mAP50}                           & \multicolumn{2}{c}{mAP50-95}                        \\
@@ -282,26 +285,27 @@ Detailed detection performance comparison for ambient illumination difference fo
 
 
 
-According to the detailed analysis, the performance difference due to the difference in ambient illumination can be explained in terms of accuracy.
-Firstly, the overall accuracies for driving vehicle detection across all classes are $0.87$ in the day test dataset and $0.89$ in the night testset.
-As the ambient illumination decreases, the accuracy for driving vehicle detection slightly increases.
-However, the accuracies for the brake light off class decreases to $0.67$ in the day testset and $0.43$ in the night testset, while the accuracies for the brake light on class increases to $0.75$ in the day testset and $0.86$ in the night testset.
-As a results of detailed analysis, the cause of the difference in performance due to the difference in ambient illumination is represented by two factors.
-Therefore, as the ambient illumination decreases, the overall detection performance for driving vehicles improves, while the detection performance for the brake light off class deteriorates and the performance for the brake light on class improves.
-We argue that this phenomenon is influenced by the tail light.
-As the ambient illumination decreases, the tail lights of the vehicles are turned on, which enhances the detection performance for driving vehicles.
-However, the turned on tail light causes confusion with the turned on brake light, leading to decreases in the detection performance for brake light off.
-As a result, the decrease in ambient illumination enhances the detection performance of vehicles with the brake light turned on, while it deteriorates the detection performance of vehicles with the brake light turned off.
+According to the detailed analysis, the performance difference attributed to the difference in ambient illumination can be explained in terms of accuracy.
+The overall accuracies for driving vehicle detection across all classes were $0.87$ in the Day testset and $0.89$ in the Night testset.
+As the ambient illumination decreased, the accuracy for driving vehicle detection slightly improved.
+However, the accuracies for the brake light off class decreased to $0.67$ in the Day testset and $0.43$ in the Night testset, while the accuracies for the brake light on class increased to $0.75$ in the Day testset and $0.86$ in the Night testset.
+The detailed analysis revealed that this performance difference is influenced by the presence of tail lights.
+% , the cause of the difference in performance due to the difference in ambient illumination is represented by two factors.
+% Therefore, as the ambient illumination decreases, the overall detection performance for driving vehicles improves, while the detection performance for the brake light off class deteriorates and the performance for the brake light on class improves.
+% We argue that this phenomenon is influenced by the tail light.
+As the ambient illumination decreases, the tail lights of the vehicles are turned on, enhancing the detection performance for driving vehicles.
+However, the turned-on tail lights can cause confusion with the turned-on brake lights, leading to a decreases in the detection performance for brake light off class.
+Consequently, the decrease in ambient illumination improves the detection performance of vehicles with the brake light turned on while deteriorating the detection performance of vehicles with the brake light turned off.
 
 
-\begin{figure}[!b]
+\begin{figure}[!t]
     \includegraphics[scale=0.5]{fig/plot_inference_time.png}
-    \caption{Trade-off between inference time and detection accuracy in different environments. The x-axis represents the inference time and the y-axis represents the detection accuracy as mAP50. It showcases the trends in inference speed and detection performance for differenct sizes of YOLOv8 under different computing environments as follows:"@GPU" refers to Nvidia Tesla T4, "@Nano" refers to Nvidia Jetson Nano, and "@CPU" refers to Intel Xeon processor.}
+    \caption{Trade-off between inference time and detection accuracy in different environments. The x-axis represents the inference time and the y-axis represents the detection accuracy as mAP50. It showcases the trends in inference speed and detection performance for differenct sizes of YOLOv8 under different computing environments as follows: ``@GPU'' refers to Nvidia Tesla T4, ``@Nano'' refers to Nvidia Jetson Nano, and ``@CPU'' refers to Intel Xeon processor.}
     \label{fig:inference}
 \end{figure}
 
 \begin{table}[!b]
-    \caption{Results of comparision for inference time in different environments. All models were inferred by converting to ONNX form, and the different computing environments are as follows:"@GPU" refers to Nvidia Tesla T4, "@Nano" refers to Nvidia Jetson Nano, and "@CPU" refers to Intel Xeon processor.}
+    \caption{Results of comparison for inference time in different environments. All models were inferred by converting to ONNX form, and the different computing environments are as follows: ``@GPU'' refers to Nvidia Tesla T4, ``@Nano'' refers to Nvidia Jetson Nano, and ``@CPU'' refers to Intel Xeon processor.}
     \label{tab:inference}
     \begin{tabular}{lrrr}
     \toprule
@@ -310,22 +314,21 @@ As a result, the decrease in ambient illumination enhances the detection perform
     \midrule
     YOLOv8n & 12.04        & 133.30            & 353.13    \\
     YOLOv8s & 12.16        & 217.20            & 891.93    \\
-    YOLOv8m & 20.20        & 471.59            & 1792.31   \\
-    YOLOv8l & 29.09       & 733.27            & 3340.26   \\
-    YOLOv8x & 41.87       & 1208.69           & 4222.87  \\
+    YOLOv8m & 20.20        & 471.59            & 1,792.31   \\
+    YOLOv8l & 29.09       & 733.27            & 3,340.26   \\
+    YOLOv8x & 41.87       & 1,208.69           & 4,222.87  \\
     \bottomrule
     \end{tabular}%
 \end{table}
 
-Given our research objective of real-time detection in driving vehicles, it is essential to conduct experiments not only to achieve accurate detection but also to evaluate the inference time. Particularly, verification on edge devices with limited computational capacity and power consumption is crucial. To validate real-time inference on edge devices, we utilized Nvidia's Jetson Nano device.
-We converted the trained model to the Open Neural Network Exchange (ONNX) format and measured the inference time on the Jetson Nano Device.
-ONNX is an open format that allows sharing and interoperability of neural network models, serving as a standardized format for mutual conversion between various frameworks.
-The inference times ranged from $133.30$ ms to $733.27$ ms, depending on the model size. 
-Considering that brake light status detection is a perception algorithm aimed at improving the ride comfort of ADAS or autonomous driving systems, the achieved inference time of 133.30ms with the smallest model, the YOLOv8n, can be deemed sufficiently real-time.
-The trade-off performance between inference time and detection accuracy is shown in Figure \ref{fig:inference}.
-To provide an intuitive performance comparison, we included the performance on not only the Jetson Nano but also on CPU and GPU.
-The CPU device used was Intel Xeon 2.20GHz, and the GPU device used was Nvidia Tesla T4.
-Detailed values are described in Table \ref{tab:inference}.
+In order to validate the real-time inference performance of the trained models on edge devices, experiments were conducted to evaluated both accurate detection and inference time. 
+The Nvidia Jetson Nano device was utilized for this perpose.
+The trained models were converted to the Open Neural Network Exchange (ONNX) format, which is an open format that facilitates the sharing and interoperability of neural network models across different frameworks. The inference time was measured on the Jetson Nano device using the ONNX models.
+The measured inference times ranged from $133.30$ ms to $733.27$ ms, depending on the size of the model.
+Considering that brake light status detection is a perception algorithm and JetSon Nano is sufficiently rigorous for testing real-time performance, the achieved inference time of $133.30$ ms with the smallest model, the YOLOv8n, can be considered sufficiently real-time.
+The trade-off performance between inference time and detection accuracy is illustrated in Figure \ref{fig:inference}.
+To provide a comprehensive performance comparison, the performance on different devices, including the Jetson Nano, CPU (Intel Xeon 2.20GHz), and GPU (Nvidia Tesla T4), was included.
+Detailed values can be found in Table \ref{tab:inference}.
 
 
 

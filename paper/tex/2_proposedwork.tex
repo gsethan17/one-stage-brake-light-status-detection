@@ -1,10 +1,11 @@
 \section{Proposed Work}
 \label{sec:proposed}
 
-In this study, we propose one-stage brake light detection network based on YOLOv8. Proposed network detects not only the driving vehicle but also the vehicle's brake light status in a one-stage. 
-The input of the network is a single forward image taken from on ego-vehicle and outputs are the brake light status categories along with the 2D bounding boxes for all driving vehicle in the input image as shown in Figure \ref{fig:workflow}.
-2D bounding box is represented by four numerical information $x$, $y$, $w$, and $h$. $x$ and $y$ is 2D center coordinates of the bounding box and $w$ and $h$ is width and height of the bounding box, respectively. 
-The number of classes $m$ is defined as $2$, which means the brake light status categories and classes score $C$ means the probability value of each category as follows:
+In this study, we propose a one-stage brake light detection network based on YOLOv8. The network is designed to detect both the driving vehicle and its brake light status in a single stage. 
+The input to the network is a single forward image captured from the ego-vehicle, and the outputs consist of the brake light status categories and 2D bounding boxes for all driving vehicles present in the input image (as depicted in in Figure \ref{fig:workflow}).
+The 2D bounding box is represented by four numerical values: $x$, $y$, $w$, and $h$. The coordinates $(x,y)$ represent the center of the bounding box, while $w$ and $h$ denote the width and height of the bounding box, respectively. 
+The number of classes, denoted as $m$, is defined as $2$, including the brake light status categories.
+The classes score, denoted as $C$, represent the probability value associated with each category:
 
 \begin{equation}
     m=2, \;\;\; C   \begin{cases}
@@ -15,21 +16,23 @@ The number of classes $m$ is defined as $2$, which means the brake light status 
 \end{equation}
 
 where $C_{1}$ is the probability that the brake light is turned off, and $C_{2}$ is the probability that the brake light is turned on of the detected vehicle.
-Therefore, proposed network outputs the bounding boxes for all vehicles present in the input image regardless of the vehicle type, along with the probability values for the two defined classes.
-Here, all vehicles encompass not only conventional passenger cars but also motorcycles, buses, trucks and special vehicles.
+Hence, the proposed network outputs the bounding boxes for all vehicles present in the input image, irrespective of the vehicle type, along with the corresponding probability values for the two defined classes.
+These vehicles include conventional passenger cars as well as motorcycles, buses, trucks, and special vehicles.
 
 \subsection{Dataset}
 \label{sec:method_dataset}
-To perform a specific task of detecting brake light status with vehicle, we need to prepare a custom dataset.
-Custom dataset preparation is divided into input image collection and annotation process.
-To collect forward images of the driving vehicle, we use a dashboard camera, which is designed to capture video footage of the road ahead while driving. Two different cameras (FINEVu GX2000 and Mercedes-Benz dashcam) are used, each is mounted on the windshield inside of different vehicle.
-After driving in the vehicle mounted with the camera, images are collected by extracting single images from the video stored in the dashboard camera. 
-However, since the dashboard camera typically captures more than 30 images per second, collecting every single image as an input image will adversely affect learning due to many similar images.
-To circumvent this problem, we collect the input images at $T$ second intervals from the video.
+To accomplish the specific task of detecting brake light status along with the vehicle, a custom dataset needs to be prepared.
+The process of creating a custom dataset involves collecting input images and annotating them accordingly.
+To collect forward images of the driving vehicle, we utilize a dashboard camera specifically designed to capture video footage of the road ahead during driving. 
+We employ two different cameras, namely the FINEVu GX2000 and Mercedes-Benz dashcam, which are mounted on the windshields of different vehicles.
+After driving with the vehicle equipped with the dashboard camera, we extract single images from the recorded video.
+However, considering that the dashboard camera typically captures more than 30 images per second, using every single image as input for the dataset would result in a large number of similar images.
+To address this issue and prevent redundancy in the dataset, we collect the input images at $T$-second intervals from the video.
 
-Another thing that should not be overlooked while using the dashboard camera images is the camera's image post-processing capabilities.
-The dashboard camera include various image post-processing features such as brightness correction and High Dynamic Range (HDR), as it is essential to capture clear details in critical situations such as car accidents.
-Therefore, it is necessary to consider the pre-processing of input data in order to train a network that exhibits reliable performance even with a general camera, which has no image post-processing features. The data pre-processing we consider is described in Section \ref{sec:exp_pre}.
+Another crucial aspect to consider when utilizing dashboard camera images is the camera's image postprocessing capabilities.
+Dashboard camera often include features like brightness correction and High Dynamic Range (HDR) to capture clear details, especially in critical situations such as car accidents.
+However, it is essential to account for the preprocessing of input data in training a network that can deliver reliable performance even with a general camera lacking image postprocessing features. 
+The data preprocessing methods we consider are described in Section \ref{sec:exp_pre}.
 
 \begin{figure}[t]%
 
@@ -44,50 +47,42 @@ Therefore, it is necessary to consider the pre-processing of input data in order
 \label{fig:label_hard}%
 \end{figure}
 
-To perform supervised transfer learning, annotation information in the same form as output of proposed network is required.
+For supervised transfer learning, annotation information in the same format as the output of the proposed network is required.
 Six annotation experts manually label information such as the bounding box ($x, y, w, h$) and brake light status ($C$) of vehicles appearing in each collected image.
-The experts annotate using LabelImg, which is the popular open source image annotation tool.
-This tool is open-source software and is now has become part of the open-source data labeling tool, Label Studio \cite{Label_Studio}, which offers more flexible functions.
-There are several factors that make it difficult for trained experts to annotate from single image, even with useful tool.
-Representatively, there are light reflection from Light Emitting Diode (LED) lights and confusion with tail lights.
-Most vehicle brake lights are composed of LED lights and LED lights easily reflect ambient light.
-When ambient light is reflected from an LED light and reaches the camera, the LED itself may appear to emit light even through the LED is not turned on.
-This leads to the same illusion as if the brake light of the vehicle is turned on even though it is not turned on.
-Looking at Figure \ref{fig:label_hard}-(a), it is not easy to determine whether the brake light of the vehicle in the center of the image is turned on due to the bright light around it. 
-Even when comparing the light intensity of the vehicle on the left side of the image where the brake light actually is turned on and the vehicle on the right side of the image where the brake light actually is turned off, it shows an intermediate level.
-While the light reflection issue mainly occurs during the day time when there is a lot of ambient light, it occurs confusion issue with tail lights at night.
-Looking at Figure \ref{fig:label_hard}-(b), it is not easy to determine whether the vehicle in the center of the image has only the tail light turned on or the brake light is turned on.
-If there are no surrounding vehicles in the image, this confusion will be even greater.
-In order to overcome this difficulty, the experts annotate by referring to several preceding or succeeding images. Figure \ref{fig:label_hard}-(c) and (d) are preceding images within a short span of Figure \ref{fig:label_hard}-(a) and (b), respectively.
-When referring to the preceding images, it is very easy to determine whether the brake lights of the vehicles in the center of \ref{fig:label_hard}-(a) and (b) are turned on.
+The experts employ the widely used open-source image annotation tool called LabelImg.
+This tool has become part of the open-source data labeling tool, Label Studio \cite{Label_Studio}, which provides more flexible functionalities.
+There are several factors that make it challenging for trained experts to annotate from a single image, even with the assistance of useful tools.
+One prominent challenge is the presence of light reflection from Light Emitting Diode (LED) lights and confusion with tail lights.
+Since most vehicle brake lights are composed of LED lights, they can easily reflect ambient light.
+Consequently, when ambient light is reflected from an LED light and reaches the camera, the LED itself may appear to emit light even if it is not turned on.
+This illusion creates difficulty in determining whether the brake light of a vehicle is turned on or off.
+Figure \ref{fig:label_hard}-(a) illustrates a scenario where it is challenging to discern the brake light status of the vehicle in the center of the image due to the bright surrounding light. 
+Even when comparing the light intensity of the vehicle on the left side of the image, where the brake light is turned on, with the vehicle on the right side of the image, where the brake light is turned off, it shows an intermediate level.
+While the light reflection is more prevalent during the daytime when there is ample ambient light, confusion with tail lights arises at night.
+Figure \ref{fig:label_hard}-(b) showcases a scenario where it is difficult to determine whether the vehicle in the center of the image has only the tail light of both the tail light and brake light is turned on.
+This confusion becomes more pronounced when there are no surrounding vehicles in the image.
+To overcome these challenges, the experts annotate by referring to several preceding or succeeding images. 
+Figure \ref{fig:label_hard}-(c) and (d) depict preceding images captured in close proximity to Figure \ref{fig:label_hard}-(a) and (b), respectively.
+By referring to the preceding images, it becomes much easier to determine whether the brake lights of the vehicles in Figure \ref{fig:label_hard}-(a) and (b) are turned on.
 
 
 
 
 \subsection{YOLOv8}
-YOLO, which stands for "You Only Look Once", is one of the popular multi-object detection algorithms \cite{redmon2016you}.
-As the name suggests, YOLO aims to provide detection results by analyzing the image only once. 
-Before YOLO was proposed, many multi-object detection algorithms adopted multiple stages to accurately detect object location and class \cite{girshick2014rich, he2015spatial, girshick2015fast, ren2015faster}.
+YOLO, which stands for ``You Only Look Once,'' is a well-known multi-object detection algorithms \cite{redmon2016you}.
+As its name suggests, YOLO aims to provide detection results by analyzing the image only once. 
+Prior to the introduction of YOLO, many multi-object detection algorithms relied on multiple stages to accurately detect object location and class \cite{girshick2014rich, he2015spatial, girshick2015fast, ren2015faster}.
 However, these approaches had limitations in real-time applications due to the need for multiple steps.
-YOLO introduced the idea of simultaneously detecting the locations and classes of objects.
-YOLO's key innovation is that a single neural network performs object detection.
-From the time it was first proposed, YOLO has been known for its fast inference speed and high accuracy compared to other object detection algorithms, and has gradually evolved from YOLOv1 to YOLOv8 \cite{redmon2016you, redmon2017yolo9000, redmon2018yolov3, bochkovskiy2020yolov4, YOLOv5, li2022yolov6, wang2023yolov7, YOLOv8}.
-Therefore, our proposed network is based on the YOLOv8, which is latest state-of-the-art one-stage multi-object detection algorithm.
+YOLO revolutionized object detection by simultaneously detecting the locations and classes of objects using a single neural network.
+Since its inception, YOLO has been recognized for its fast inference speed and high accuracy compared to other object detection algorithms.
+It has evolved from YOLOv1 to latest state-of-the-art version, YOLOv8 \cite{redmon2016you, redmon2017yolo9000, redmon2018yolov3, bochkovskiy2020yolov4, YOLOv5, li2022yolov6, wang2023yolov7, YOLOv8}.
+Therefore, our proposed network is based on the YOLOv8, the latest state-of-the-art one-stage multi-object detection algorithm.
 
-YOLOv8 \cite{YOLOv8} was officially released in January 2023 and underwent a update based on YOLOv5 \cite{YOLOv5}.
-The notable updates in YOLOv8 include a structural change in the partial bottleneck, a shift to an anchor-free approach with the decoupled head, and a change in the activation function of the top layer \cite{terven2023comprehensive}.
-The loss functions used in YOLOv8 include binary cross-entropy for classification loss and a complete intersection over union (CIoU) \cite{zheng2020distance} and a distribution focal loss (DFL) \cite{li2020generalized} loss functions for localization loss.
-The output of propose network consists of $8,400$ bounding boxes with $6$ parameters per input image.
-These $6$ parameters represent the 2D center coordinates, width, and height of the bounding box ($x, y, w, h$), and the probability values for each class, brake light is turned off or on. 
-Among the $8,400$ output bounding boxes, insignificant detections are filtered out through post-processing as non-maximum suppression (NMS).
+YOLOv8 \cite{YOLOv8} was officially released in January 2023 and incorporates updates from YOLOv5 \cite{YOLOv5}.
+Notable updates in YOLOv8 include a structural changes in the partial bottleneck, a shift to an anchor-free approach with the decoupled head, and a change in the activation function of the top layer \cite{terven2023comprehensive}.
+The loss functions utilized in YOLOv8 include binary cross-entropy for classification loss, complete intersection over union (CIoU) \cite{zheng2020distance}, and distribution focal loss (DFL) \cite{li2020generalized} for localization loss.
+The output of the proposed network consists of $8,400$ bounding boxes, with $6$ parameters assigned to each input image.
+These parameters represent the 2D center coordinates, width, and height of the bounding box ($x, y, w, h$), as well as the probability values for each class, indicating whether the brake light is turned off or on. 
+Among the $8,400$ output bounding boxes, postprocessing techniques such as non-maximum suppression (NMS) are employed to filter out insignificant detections.
 This helps eliminate redundant and overlapping bounding boxes, resulting in a more refined and accurate set of detections.
 
-
-% \begin{equation}
-    % loss_{iou} = \frac{{\sum ((1.0 - iou) \cdot weight)}}{targetscoressum}
-% \end{equation}
-% used pretrained weights trained by COCO and image Net detaset
-
-% bbox loss = iou
-% dfl loss
-% cls loss

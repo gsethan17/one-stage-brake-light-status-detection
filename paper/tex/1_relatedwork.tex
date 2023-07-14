@@ -2,42 +2,43 @@
 \label{sec:related}
 % This section presents an overview of prior research regarding brake light detection and YOLO.
 
-Research on vehicle brake light status detection has been conducted for various purposes such as collision avoidance and deceleration prediction.
-Since the greatest clue is the brightness difference of the brake light of the vehicle, all studies are based on forward images.
-The detection methods can be broadly categorized into image processing \cite{thammakaroon2009predictive, chen2015daytime, liu2015vision}, frequency-tuned \cite{chen2012frequency}, machine learning \cite{cui2015vision, nava2019collision, pirhonen2022brake}, and deep learning approaches \cite{wang2016appearance, li2020highly, kim2022detecting}.
-In terms of research scope, most studies target daytime conditions \cite{liu2015vision,chen2015daytime,cui2015vision,wang2016appearance,nava2019collision,pirhonen2022brake}, and there are also studies that focus on more challenging scenarios such as nighttime \cite{thammakaroon2009predictive,chen2012frequency} or tunnel environments \cite{kim2022detecting} where detection is more difficult due to confusion with tail light.
-It is less common to find studies that simultaneously address both day and night-time conditions \cite{li2020highly}.
+Research has been conducted on vehicle brake light status detection for various purposes, including collision avoidance and deceleration prediction.
+These studies primarily rely on forward images as the brake light's brightness difference serves as the most significant clue. 
+Detection methods can be broadly categorized into image processing \cite{thammakaroon2009predictive, chen2015daytime, liu2015vision}, frequency-tuned \cite{chen2012frequency}, machine learning \cite{cui2015vision, nava2019collision, pirhonen2022brake}, and deep learning approaches \cite{wang2016appearance, li2020highly, kim2022detecting}.
+In terms of research scope, most studies focus on daytime conditions \cite{liu2015vision,chen2015daytime,cui2015vision,wang2016appearance,nava2019collision,pirhonen2022brake}, targeting scenarios where the detection of brake light status is relatively straightforward. 
+However, there are also studies that address more challenging scenarios, such as nighttime \cite{thammakaroon2009predictive,chen2012frequency} or tunnel environments \cite{kim2022detecting}, where the detection becomes more difficult due to potential confusion with tail lights.
+It is less common to find studies that simultaneously address both day- and nighttime conditions \cite{li2020highly}.
 
-Studies utilizing image processing employ heuristic approaches to detect brake light operation in different color spaces.
-Liu et al. utilize the the most common red-green-blue (RGB) color space and leverage a threshold for color difference between adjacent frames to detect brake light operation \cite{liu2015vision}.
-Similarly, Thammakaroon and Tangamchit also use threshold in the RGB space, but they additionally perform low light image processing in the hue-saturation-intensity (HSI) color space as their research objective is to detect brake light operation in nighttime images \cite{thammakaroon2009predictive}.
-Chen et al. used the a* component in the LAB color space to perform binary thresholding for brake light detection \cite{chen2015daytime}.
-In the LAB color space, L* represents the lightness, while a* and b* represent the color ranges, with a* representing the red-greed axis and b* representing the yellow-blue axis.
-These different color spaces are also used in the image preprocessing of the research using machine learning or deep learning approaches: Cui et al. \cite{cui2015vision} used the hue-saturation-value (HSV) color space, Nava et al. \cite{nava2019collision} and Pirhonen et al. \cite{pirhonen2022brake} used the LAB color space.
+Studies that utilize image processing techniques employ heuristic approaches and leverage different color spaces for brake light detection.
+Liu et al. utilize the the most common red-green-blue (RGB) color space and apply a threshold for color difference between adjacent frames to detect brake light operation \cite{liu2015vision}.
+Similarly, Thammakaroon and Tangamchit also use a threshold in the RGB space, but they additionally perform low light image processing in the hue-saturation-intensity (HSI) color space, focusing on detecting brake light operation in nighttime images \cite{thammakaroon2009predictive}.
+Chen et al. utilize a* component in the LAB color space to perform binary thresholding for brake light detection \cite{chen2015daytime}.
+In the LAB color space, L* represents the lightness, while a* and b* represent the color ranges, with a* representing the red-green axis and b* representing the yellow-blue axis.
+These different color spaces are also utilized in the image preprocessing stages of studies that employ machine learning or deep learning approaches.
+Cui et al. use the hue-saturation-value (HSV) color space \cite{cui2015vision}, while Nava et al. and Pirhonen et al. utilize the LAB color space \cite{nava2019collision, pirhonen2022brake}.
 
-Unlike the above heuristic approaches, Chen and Peng focused on finding invariant features in the frequency domain to present an effective methodology for an extensive datasets \cite{chen2012frequency}.
-However, recently, learning-based methods have shown much more effective performance, and research on brake detection based on machine learning or deep learning has been extensively conducted.
-Cui et al. \cite{cui2015vision} and Nava et al. \cite{nava2019collision} achieved high brake light detection performance using support vector machine (SVM), with an F1 score of $0.95$ and a $90\%$ detection rate, respectively. 
-Pirhonen et al. \cite{pirhonen2022brake} showed an accuracy of $82\%$ using the random forest with objects primarily at distances of $50$ meters or more.
+In contrast to the heuristic approaches mentioned earlier, Chen and Peng focused on finding invariant features in the frequency domain, presenting an effective methodology for an extensive datasets \cite{chen2012frequency}.
+However, in recent years, learning-based methods have shown much more effective performance, leading to extensive research on brake light detection based on machine learning or deep learning techniques.
+Cui et al. and Nava et al. achieved high brake light detection performance using support vector machines (SVM), with an F1 score of $0.95$ and a $90\%$ detection rate, respectively \cite{cui2015vision, nava2019collision}. 
+Pirhonen et al. achieved an accuracy of $82\%$ using the random forest, primarily focusing on objects at distances of $50$ meters or more \cite{pirhonen2022brake}.
 Wang et al. utilized deep learning methods, specifically convolutional neural networks (CNN), as the foundation for detecting brake light status and other related features \cite{wang2016appearance}.
-They used the pre-trained AlexNet model \cite{krizhevsky2012imagenet} from the ImageNet dataset \cite{russakovsky2015imagenet}, and achieved an accuracy $89\%$.
+They used a pre-trained AlexNet model \cite{krizhevsky2012imagenet} from the ImageNet dataset \cite{russakovsky2015imagenet}, and achieved an accuracy of $89\%$.
 Kim utilized not only CNN but also long short-term memory (LSTM) to detect the brake light status of driving vehicles, achieving an accuracy of $90.2\%$ specifically for vehicles driving inside tunnels \cite{kim2022detecting}.
-The mentioned machine learning and deep learning methods demonstrated high performance, but they all have limitations in that they only consider specific scenarios such as daytime or tunnels, and they have been validated only on their own non-public datasets.
+While these machine learning and deep learning methods demonstrated high performance, it is important to note that they all have limitations in that they primarily consider specific scenarios such as daytime or tunnels.
+Additionally, they have been validated only on their own nonpublic datasets.
 
-The common limitation among all the mentioned brake light detection studies is the use of a multi-stage detection structure.
-The described detection methods all assume that the target vehicle has been detected beforehand, and then the detection of brake light is performed.
-Therefore, prior to brake light detection, the detection of the target vehicle is performed using various methods.
-Chen et al. \cite{chen2015daytime} and Wang et al. \cite{wang2016appearance} utilized the histogram of oriented gradients (HOG) detector for driving vehicle detection. 
-Cui et al. \cite{cui2015vision} combined the HOG detector with SVM and Liu et al. \cite{liu2015vision} utilized AdaBoost \cite{freund1996experiments}. 
-Nava et al. used initial version of YOLO \cite{redmon2016you,redmon2017yolo9000} and Pirhonen et al. \cite{pirhonen2022brake} and Kim \cite{kim2022detecting} employed improved versions of YOLO, specifically YOLOv3 \cite{redmon2018yolov3} and YOLOv4 \cite{bochkovskiy2020yolov4}, respectively, for driving vehicle detection.
+A common limitation among all the mentioned brake light detection studies is the use of a multi-stage detection structure.
+These methods all assume that the target vehicle has been detected beforehand, and then the detection of the brake light is performed.
+Various methods are used for target vehicle detection, such as the histogram of oriented gradients (HOG) detector \cite{chen2015daytime, wang2016appearance}, combination of HOG detector with SVM \cite{cui2015vision}, and AdaBoost \cite{liu2015vision, freund1996experiments}.
+Additionally, initial versions of YOLO \cite{redmon2016you, redmon2017yolo9000} and improved versions like YOLOv3 \cite{redmon2018yolov3} and YOLOv4 \cite{bochkovskiy2020yolov4} are employed for driving vehicle detection \cite{pirhonen2022brake, kim2022detecting}.
 Accurate detection of driving vehicles can enhance the performance of brake light status detection. 
-However, the multi-stage approach faces a significant limitation in terms of real-time capability. 
-The fundamental purpose of brake light status detection is to contribute to the development of safer systems by integrating with ADAS or autonomous driving systems. Consequently, if real-time performance is not ensured, the value of even highly accurate detection is compromised.
+However, the multi-stage approach has a significant limitation in terms of real-time capability. 
+The fundamental purpose of brake light status detection is to contribute to the development of safer systems by integrating with ADAS or autonomous driving systems. If real-time performance is not ensured, even highly accurate detection loses its value.
 
-Li et al. \cite{li2020highly} proposed a one-stage detector for real-time brake light status detection. 
-They utilized a light version of YOLOv3 \cite{redmon2018yolov3}, called YOLOv3-tiny, as the backbone network, and enhanced the detection performance by adding output layers and spatial pyramid pooling (SPP) \cite{he2015spatial}. 
-As a result, they reported a detection performance of mAP $89.13$ for brake activation detection and achieved real-time capability with a frame rate of $63$ FPS.
-However, the reported $63$ FPS was measured on a GTX-1060 GPU, which provides a significantly more powerful environment compared to the hardware typically used in real-world vehicle control systems. 
-Therefore, it is necessary to propose brake light status detection models that can achieve high detection performance with fast inference speed on edge device.
+Li et al. proposed a one-stage detector for real-time brake light status detection \cite{li2020highly}. 
+They utilized a light version of YOLOv3, called YOLOv3-tiny, as the backbone network, and enhanced the detection performance by adding output layers and spatial pyramid pooling (SPP \cite{he2015spatial}). 
+They reported a detection performance of mAP $89.13$ for brake activation detection and achieved real-time capability with a frame rate of $63$ FPS.
+However, it's important to note that the reported frame rate was measured on a powerful GPU (GTX-1060), which is significantly more powerful than the hardware typically used in real-world vehicle control systems. 
+Therefore, it is necessary to propose brake light status detection models that can achieve high detection performance with fast inference speed on the edge devices, which are commonly used in real-world vehicle control systems.
 
 
