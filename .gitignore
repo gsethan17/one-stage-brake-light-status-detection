@@ -183,3 +183,9 @@ config.py
 *.synctex.gz
 *.bbl
 *.blg
+*.pdf
+*.out
+
+# other tamplete
+*.xlsx
+*.docx
