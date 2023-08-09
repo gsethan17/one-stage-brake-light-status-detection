@@ -6,7 +6,7 @@ Section \ref{sec:exp_pre} provides details about the custom dataset collected as
 Section \ref{sec:exp_transfer} focuses on the transfer learning process of YOLOv8 using the custom dataset.
 The experimental results are presented in detail in Section \ref{sec:exp_results}.
 
-\subsection{Custom dataset \& Pre-processing}
+\subsection{Custom dataset \& Preprocessing}
 \label{sec:exp_pre}
 A large-scale custom dataset consisting over 16 hours of data was collected. 
 Videos recorded from dashboard cameras during real road driving were utilized, resulting in a total of more than $11,000$ images.
@@ -35,19 +35,13 @@ The details of numbers of images and annotations in the train and test sets in e
     % }
 \end{table}
 
-\begin{figure}[b!]%
 
-    \subfloat{{\includegraphics[height=4.5cm]{fig/image20.png} }}%
-    \subfloat{{\includegraphics[height=4.5cm]{fig/image21.png} }}%
-    \subfloat{{\includegraphics[height=4.5cm]{fig/image22.png} }}%
-    \hfill
-    \subfloat{{\includegraphics[height=4.5cm]{fig/image23.png} }}%
-    \subfloat{{\includegraphics[height=4.5cm]{fig/image24.png} }}%
-    \subfloat{{\includegraphics[height=4.5cm]{fig/image25.png} }}%
 
-\caption{Preprocessed input images of custom dataset}
-\label{fig:custom_dataset}%
-\end{figure}
+
+
+
+
+
 
 To make our custom dataset trainable with YOLOv8 and achieve robust performance, several preprocessing steps are necessary.
 The first crucial processes involve image resizing and normalization.
@@ -66,15 +60,51 @@ Furthermore, various data augmentation techniques were applied to enhance the ro
 Random horizontal flipping and image cropping were performed to generate variations of the collected images that could realistically occur.
 To improve detection performance in cases of occlusion, random black-box cutout augmentation was also applied.
 Finally, to ensure robustness across different camera setups, the quality of the input images was intentionally degraded using various methods.
-
-
-
 As stated in Section \ref{sec:method_dataset}, the dashboard cameras used for image acquisition are equipped with various postprocessing methods to captured high-quality images.
-to ensure the robust performance of the trained network even with general cameras, random modifications such as brightness changes, blur, and noise injection were applied to the images.
+\textcolor{blue}{ \sout{t}T}o ensure the robust performance of the trained network even with general cameras, random modifications such as brightness changes, blur, and noise injection were applied to the images.
+\textcolor{blue}{The details of all random modifications applied during the preprocessing stage are as follows:}
+
+\begin{figure}[t!]%
+
+    \subfloat[Reshape]{{\includegraphics[height=3.4cm]{fig/preprocessing_reshape.jpeg} }}%
+    \subfloat[horizontal flip]{{\includegraphics[height=3.4cm]{fig/preprocessing_flip.jpeg} }}%
+    \subfloat[Crop]{{\includegraphics[height=3.4cm]{fig/preprocessing_crop.jpeg} }}%
+    \subfloat[Black-box cutout]{{\includegraphics[height=3.4cm]{fig/preprocessing_cutout.jpeg} }}%
+    \hfill
+    \subfloat[Brightness increase]{{\includegraphics[height=3.4cm]{fig/preprocessing_brightness_max.jpeg} }}%
+    \subfloat[Brightness decrease]{{\includegraphics[height=3.4cm]{fig/preprocessing_brightness_min.jpeg} }}%
+    \subfloat[Blur]{{\includegraphics[height=3.4cm]{fig/preprocessing_blur} }}%
+    \subfloat[Noise]{{\includegraphics[height=3.4cm]{fig/preprocessing_noise.jpeg} }}%
+
+\caption{\textcolor{blue}{Examples of individual random modifications applied during the preprocessing stage. (c) to (n) represent example images that reflect the maximum extent of each random modification considered.}}
+\label{fig:random}%
+\end{figure}
+
+\begin{itemize}
+    \item{\textcolor{blue}{Crop: zoom rate chosen from uniform distribution within the range of $0\%$ to $20\%$}}
+    \item{\textcolor{blue}{Cutout: a maximum size of black-box is $20\%$ of image size, a maximum of $3$ boxes}}
+    \item{\textcolor{blue}{Brightness: adjustment with a range of minimum $-25\%$ to maximum $+25\%$}}
+    \item{\textcolor{blue}{Blur: a gaussian blur with a maximum kernel size of $3 \times 3$}}
+    \item{\textcolor{blue}{Noise: add noise to a maximum of $5\%$ of pixels}}
+\end{itemize}
+\textcolor{blue}{The images illustrating each modification can be found in Figure \ref{fig:random}.}
 Figure \ref{fig:custom_dataset} provides examples of preprocessed images.
 All preprocessing steps were performed using Roboflow \cite{roboflow}, a comprehensive platform for computer vision and image processing tasks.
 The preprocessed train dataset is publicly available for access \cite{brake-light-detection_dataset}.
 
+\begin{figure}[t!]%
+
+    \subfloat{{\includegraphics[height=4.5cm]{fig/image20.png} }}%
+    \subfloat{{\includegraphics[height=4.5cm]{fig/image21.png} }}%
+    \subfloat{{\includegraphics[height=4.5cm]{fig/image22.png} }}%
+    \hfill
+    \subfloat{{\includegraphics[height=4.5cm]{fig/image23.png} }}%
+    \subfloat{{\includegraphics[height=4.5cm]{fig/image24.png} }}%
+    \subfloat{{\includegraphics[height=4.5cm]{fig/image25.png} }}%
+
+\caption{Preprocessed input images of custom dataset}
+\label{fig:custom_dataset}%
+\end{figure}
 
 
 \subsection{Transfer learning}
@@ -112,19 +142,45 @@ These factors were chosen to balance the impact of each loss function during tra
 \end{table}
 
 \begin{figure}[t]%
+    \captionsetup[subfigure]{justification=centering}
 
-    \subfloat{{\includegraphics[height=1.9cm]{fig/Capture/0_highway.jpg} }}%
-    \subfloat{{\includegraphics[height=1.9cm]{fig/Capture/0_city.jpg} }}%
-    \subfloat{{\includegraphics[height=1.9cm]{fig/Capture/0_tunnel.jpg} }}%
-    \subfloat{{\includegraphics[height=1.9cm]{fig/Capture/0_night.jpg} }}%
+    \subfloat[]{{\includegraphics[height=1.9cm]{fig/img/2-1.jpg} }}%
+    \subfloat[]{{\includegraphics[height=1.9cm]{fig/img/2-2.jpg} }}%
+    \subfloat[]{{\includegraphics[height=1.9cm]{fig/img/3-1_zoom.png} }}%
+    \subfloat[]{{\includegraphics[height=1.9cm]{fig/img/3-2_zoom.png} }}%
     \hfill
-    \subfloat{{\includegraphics[height=1.9cm]{fig/Capture/0_motor.jpg} }}%
-    \subfloat{{\includegraphics[height=1.9cm]{fig/Capture/0_bus.jpg} }}%
-    \subfloat{{\includegraphics[height=1.9cm]{fig/Capture/0_truck.jpg} }}%
-    \subfloat{{\includegraphics[height=1.9cm]{fig/Capture/0_special_1.jpg} }}%
+    \subfloat[]{{\includegraphics[height=1.9cm]{fig/img/1-1.jpg} }}%
+    \subfloat[]{{\includegraphics[height=1.9cm]{fig/img/1-2.jpg} }}%
+    \subfloat[]{{\includegraphics[height=1.9cm]{fig/img/1-3.jpg} }}%
+    \subfloat[]{{\includegraphics[height=1.9cm]{fig/img/1-4.jpg} }}%
+    \hfill
+    \subfloat[]{{\includegraphics[height=1.9cm]{fig/img/4-1_zoom.png} }}%
+    \subfloat[]{{\includegraphics[height=1.9cm]{fig/img/4-2_zoom.png} }}%
+    \subfloat[]{{\includegraphics[height=1.9cm]{fig/img/4-3_zoom.png} }}%
+    \subfloat[]{{\includegraphics[height=1.9cm]{fig/img/4-4_zoom.png} }}%
 
-\caption{Images of driving vehicle and brake light status detection results by proposed networks. Images in the first row depict the detection results in various road environments. From left to right, the depicted environments are highway, city, tunnel, and nighttime. Images in the second row depict the detection results of various vehicle types. From left to right, the depicted vehicle types include motorcycle, bus, trucks, and special vehicle.}
-\label{fig:detection}%
+\caption{\textcolor{blue}{Qualitative analysis images of driving vehicle and brake light status detection by proposed networks. (a)-(b) is a continuous image pair showcasing the scenario with leading vehicle at a close distance. (c)-(d) is the continuous image pair showcasing the scenario with leading vehicle at a far distance. (e)-(h) are the continuous image pairs showcasing the scenario with multiple vehicles at a close distance. (i)-(l) are the continuous image pairs showcasing the scenario with multiple vehicles at a far distance.
+}}
+\label{fig:qualitative_perf}%
+\end{figure}
+
+\begin{figure}[t!]%
+    % \captionsetup[subfigure]{justification=centering}
+
+    \subfloat[Highway]{{\includegraphics[height=1.9cm]{fig/Capture/0_highway.jpg} }}%
+    \subfloat[City]{{\includegraphics[height=1.9cm]{fig/Capture/0_city.jpg} }}%
+    \subfloat[Tunnel]{{\includegraphics[height=1.9cm]{fig/Capture/0_tunnel.jpg} }}%
+    \subfloat[Nighttime]{{\includegraphics[height=1.9cm]{fig/Capture/0_night.jpg} }}%
+    \hfill
+    \subfloat[Motorcycle]{{\includegraphics[height=1.9cm]{fig/Capture/0_motor.jpg} }}%
+    \subfloat[Bus]{{\includegraphics[height=1.9cm]{fig/Capture/0_bus.jpg} }}%
+    \subfloat[Truck]{{\includegraphics[height=1.9cm]{fig/Capture/0_truck.jpg} }}%
+    \subfloat[Special vehicle]{{\includegraphics[height=1.9cm]{fig/Capture/0_special_1.jpg} }}%
+
+\caption{\textcolor{blue}{ \sout{Images of driving vehicle and brake light status detection results by proposed networks. Images in the first row depict the detection results in various road environments. From left to right, the depicted environments are highway, city, tunnel, and nighttime. Images in the second row depict the detection results of various vehicle types. From left to right, the depicted vehicle types include motorcycle, bus, trucks, and special vehicle.}
+Qualitative analysis images for various driving environments and vehicle types, mainly intended as examples for the following: (a) Hightway, (b) City, (c) Tunnel, (d) Nighttime, (e) Motorcycle, (f) Bus, (g) Truck, and (h) Special vehicle.
+}}
+\label{fig:qualitative_env}%
 \end{figure}
 
 
@@ -134,12 +190,28 @@ These factors were chosen to balance the impact of each loss function during tra
 \label{sec:exp_results}
 In this section, the evaluation results of the trained detection models are presented, both qualitatively and quantitatively.
 Qualitative analysis confirmed that the trained detection models accurately detect the bounding boxes of driving vehicles and classify their brake light status (on or off) in various road environments.
-The models demonstrated robust performance in different driving scenarios, including highway, city, tunnel, and nighttime driving.
-The qualitative detection results, showcasing the accurate detection of different types of vehicles, including passenger cars, motorcycles, buses, trucks, and special vehicles, are shown in Figure \ref{fig:detection}.
+\textcolor{blue}{
+Figure \ref{fig:qualitative_perf} shows some of the images used for qualitative analysis.
+These images are provided as pairs of two or more consecutive frames to demonstrate clear analysis results.
+(a)-(b) represent one continuous image pair displaying the detection performance of leading vehicle located at a close distance.
+(c)-(d) represent another continuous image pair displaying the detection performance of leading vehicle located at a far distance.
+As evident from these two image pairs, the proposed model accurately detects the location and brake light status of leading vehicles regardless of their distance from the ego vehicle.
+(e)-(h) represent other continuous image pairs depicting scenarios with multiple vehicles present at a close distance.
+In these images, the location and brake light status of all vehicles in the images are successfully detected.
+Furthermore, even in scenarios with multiple vehicles at a far distance, all vehicles are accurately detected, as demonstrated by images pairs (i)-(l).
+}
+
+\textcolor{blue}{
+    \sout{The models demonstrated robust performance in different driving scenarios, including highway, city, tunnel, and nighttime driving.
+The qualitative detection results, showcasing the accurate detection of different types of vehicles, including passenger cars, motorcycles, buses, trucks, and special vehicles, are shown in Figure \ref{fig:qualitative_env}.}
+Qualitative analysis was conducted not only for different vehicle quantities and distances but also for various driving environments and vehicle types.
+Figure \ref{fig:qualitative_env} (a)-(d) demonstrate the robust performance of the trained model in diverse driving environments, including highway, city, tunnel, and nighttime.
+Figure \ref{fig:qualitative_env} (e)-(h) provide qualitative evidence that the model has ability to detect various vehicle types, including passenger cars, motorcycles, buses, trucks, and special vehicles.
+}
 
 The evaluation of the driving vehicle and brake light status detection performance of each model that underwent transfer learning is conducted by calculating the mean average precision (mAP) on the testset.
 Two mAP values are calculated: mAP50 and mAP50-95.
-mAP50 represents the average presicion at an intersection over union (IoU) threshold of $0.5$. The IoU threshold measures the overlap between the predicted bounding boxes and the ground truth labels, indicating how well the predicted boxes align with the actual objects.
+mAP50 represents the average \textcolor{blue}{ \sout{presicion}precision} at an intersection over union (IoU) threshold of $0.5$. The IoU threshold measures the overlap between the predicted bounding boxes and the ground truth labels, indicating how well the predicted boxes align with the actual objects.
 mAP50-95 represents the average precision over a range of IoU thresholds from $0.5$ to $0.95$, with a step size of $0.05$. 
 This metric provides comprehensive assessment of the detection model's performance across different levels of overlap.
 Both mAP50 and mAP50-95 are commonly used metrics to evaluate the overall performance of object detection models.
@@ -171,29 +243,29 @@ Detailed detection performance for each model and class can be found in Table \r
     \label{tab:total}
     % \resizebox{\textwidth}{!}{%
     % \begin{tabular}{>{\raggedright}p{2.5cm} >{\raggedright}p{2.5cm} >{\centering}p{2.5cm} >{\centering\arraybackslash}p{2.5cm}}
-    \begin{tabular}{llrr}
+    \begin{tabular}{llrrrrr}
     \toprule
-    \multicolumn{1}{c}{Model} & \multicolumn{1}{c}{Class} & \multicolumn{1}{c}{mAP50} & \multicolumn{1}{c}{mAP50-95} \\
+    \multicolumn{1}{c}{Model} & \multicolumn{1}{c}{Class} & \multicolumn{1}{c}{\textcolor{blue}{Precision}} & \multicolumn{1}{c}{\textcolor{blue}{Recall}} & \multicolumn{1}{c}{\textcolor{blue}{F1 score}} & \multicolumn{1}{c}{mAP50} & \multicolumn{1}{c}{mAP50-95} \\
     \midrule
-    \multirow{3}{*}{YOLOv8n}  & Brake Light Off           & 0.761                     & 0.494                          \\
-                              & Brake Light On            & 0.772                     & 0.516                        \\
-                              & \multicolumn{1}{r}{Total} & 0.766                     & 0.505                        \\
+    \multirow{3}{*}{YOLOv8n}  & Brake Light Off           & 0.726 & 0.670 & 0.697 & 0.761                     & 0.494                          \\
+                              & Brake Light On            & 0.549 & 0.853 & 0.668 & 0.772                     & 0.516                        \\
+                              & \multicolumn{1}{r}{Total} & 0.638 & 0.762 & 0.695 & 0.766                     & 0.505                        \\
     \midrule
-    \multirow{3}{*}{YOLOv8s}  & Brake Light Off           & 0.770                     & 0.502                        \\
-                              & Brake Light On            & 0.768                     & 0.511                        \\
-                              & \multicolumn{1}{r}{Total} & 0.769                     & 0.507                        \\
+    \multirow{3}{*}{YOLOv8s}  & Brake Light Off           & 0.755 & 0.646 & 0.696 & 0.770                     & 0.502                        \\
+                              & Brake Light On            & 0.591 & 0.837 & 0.693 & 0.768                     & 0.511                        \\
+                              & \multicolumn{1}{r}{Total} & 0.673 & 0.742 & 0.706 & 0.769                     & 0.507                        \\
     \midrule
-    \multirow{3}{*}{YOLOv8m}  & Brake Light Off           & 0.775                     & 0.514                         \\
-                              & Brake Light On            & 0.794                     & 0.533                        \\
-                              & \multicolumn{1}{r}{Total} & 0.785                     & 0.524                        \\
+    \multirow{3}{*}{YOLOv8m}  & Brake Light Off           & 0.755 & 0.650 & 0.699 & 0.775                     & 0.514                         \\
+                              & Brake Light On            & 0.579 & 0.839 & 0.685 & 0.794                     & 0.533                        \\
+                              & \multicolumn{1}{r}{Total} & 0.667 & 0.745 & 0.704 & 0.785                     & 0.524                        \\
     \midrule
-    \multirow{3}{*}{YOLOv8l}  & Brake Light Off           & 0.775                     & 0.515                         \\
-                              & Brake Light On            & 0.799                     & 0.539                        \\
-                              & \multicolumn{1}{r}{Total} & 0.787                     & 0.527                      \\
+    \multirow{3}{*}{YOLOv8l}  & Brake Light Off           & 0.746 & 0.655 & 0.698 & 0.775                     & 0.515                         \\
+                              & Brake Light On            & 0.552 & 0.867 & 0.675 & 0.799                     & 0.539                        \\
+                              & \multicolumn{1}{r}{Total} & 0.649 & 0.761 & 0.701 & 0.787                     & 0.527                      \\
     \midrule
-    \multirow{3}{*}{YOLOv8x}  & Brake Light Off           & 0.779                     & 0.518                         \\
-                              & Brake Light On            & 0.807                     & 0.546                        \\
-                              & \multicolumn{1}{r}{Total} & 0.793                     & 0.532                      \\
+    \multirow{3}{*}{YOLOv8x}  & Brake Light Off           & 0.746 & 0.650 & 0.695 & 0.779                     & 0.518                         \\
+                              & Brake Light On            & 0.578 & 0.859 & 0.691 & 0.807                     & 0.546                        \\
+                              & \multicolumn{1}{r}{Total} & 0.662 & 0.754 & 0.705 & 0.793                     & 0.532                      \\
     \bottomrule
     \end{tabular}%
     % }
@@ -304,7 +376,24 @@ Consequently, the decrease in ambient illumination improves the detection perfor
     \label{fig:inference}
 \end{figure}
 
-\begin{table}[!b]
+
+
+In order to validate the real-time inference performance of the trained models on edge devices, experiments were conducted to evaluated both accurate detection and inference time. 
+The Nvidia Jetson Nano device was utilized for this \textcolor{blue}{ \sout{perpose}purpose}.
+The trained models were converted to the Open Neural Network Exchange (ONNX) format, which is an open format that facilitates the sharing and interoperability of neural network models across different frameworks. The inference time was measured on the Jetson Nano device using the ONNX models.
+The measured inference times ranged from $133.30$ ms to $733.27$ ms, depending on the size of the model.
+\textcolor{blue}{ \sout{Considering that brake light status detection is a perception algorithm and JetSon Nano is sufficiently rigorous for testing real-time performance, the achieved inference time of $133.30$ ms with the smallest model, the YOLOv8n, can be considered sufficiently real-time.}}
+\textcolor{blue}{
+As expected, among the proposed models, YOLOv8n, with the smallest number of parameters and computations, exhibited the fastest inference time of $133.30$ ms, surpassing even human cognitive processing time.
+It is worth noting that the average human cognitive response time is approximately 200 ms.
+While faster inference time are generally preferred, it is crucial to acknowledge that Jetson Nano operates in a resource-constrained environment.
+Despite these strict limitations, YOLOv8n achieved inference time faster than human cognitive processing, indicating that it is sufficiently real-time capability.
+}
+The trade-off performance between inference time and detection accuracy is illustrated in Figure \ref{fig:inference}.
+To provide a comprehensive performance comparison, the performance on different devices, including the Jetson Nano, CPU (Intel Xeon 2.20GHz), and GPU (Nvidia Tesla T4), was included.
+Detailed values can be found in Table \ref{tab:inference}.
+
+\begin{table}[!h]
     \caption{Results of comparison for inference time in different environments. All models were inferred by converting to ONNX form, and the different computing environments are as follows: ``@GPU'' refers to Nvidia Tesla T4, ``@Nano'' refers to Nvidia Jetson Nano, and ``@CPU'' refers to Intel Xeon processor.}
     \label{tab:inference}
     \begin{tabular}{lrrr}
@@ -321,14 +410,54 @@ Consequently, the decrease in ambient illumination improves the detection perfor
     \end{tabular}%
 \end{table}
 
-In order to validate the real-time inference performance of the trained models on edge devices, experiments were conducted to evaluated both accurate detection and inference time. 
-The Nvidia Jetson Nano device was utilized for this perpose.
-The trained models were converted to the Open Neural Network Exchange (ONNX) format, which is an open format that facilitates the sharing and interoperability of neural network models across different frameworks. The inference time was measured on the Jetson Nano device using the ONNX models.
-The measured inference times ranged from $133.30$ ms to $733.27$ ms, depending on the size of the model.
-Considering that brake light status detection is a perception algorithm and JetSon Nano is sufficiently rigorous for testing real-time performance, the achieved inference time of $133.30$ ms with the smallest model, the YOLOv8n, can be considered sufficiently real-time.
-The trade-off performance between inference time and detection accuracy is illustrated in Figure \ref{fig:inference}.
-To provide a comprehensive performance comparison, the performance on different devices, including the Jetson Nano, CPU (Intel Xeon 2.20GHz), and GPU (Nvidia Tesla T4), was included.
-Detailed values can be found in Table \ref{tab:inference}.
 
+\begin{table}[!h]
+    \caption{\textcolor{blue}{Comparison of learning-based brake light status detection algorithms.}}
+    \label{tab:comparison}
+    \resizebox{\textwidth}{!}{%
+    \begin{tabular}{lcrrclclc}
+        \toprule
+        \multicolumn{1}{c|}{\multirow{2}{*}{Study}} & \multicolumn{1}{c|}{\multirow{2}{*}{Proposed work}} & \multicolumn{3}{c|}{Dataset}                                                                                                         & \multicolumn{2}{c}{Brake Light Detection}                       & \multicolumn{2}{|c}{Evaluation}                                                                                    \\
+        \multicolumn{1}{c|}{}                       & \multicolumn{1}{c|}{}                               & \multicolumn{1}{c}{\# Data}                                        & \multicolumn{1}{c}{\# Samples} & \multicolumn{1}{c|}{Condition $^{1}$} & \multicolumn{1}{c}{Classification} & Localization & \multicolumn{1}{|c}{Performance} & \multicolumn{1}{c}{Inference time (ms)}                                              \\
+        \midrule
+        Cui et al. \cite{cui2015vision}                                 & HOG, SVM                                           & 10,000 images                                                      & \multicolumn{1}{r}{-- $^{2}$}          & D                             &  Turned On           &              & 0.75 (Detection rate)           & N/T $^{3}$                                                                             \\
+        Nava et al. \cite{nava2019collision}                                & YOLO, SVM                                          & 9,700 images                                                       & 9,700                          & D                             &  Turned On/Off       &              & 0.95 (F1 score)                 & N/T $^{3}$                                                                             \\
+        Pirhonen et al. \cite{pirhonen2022brake}                            & YOLOv3, RF                                         & 822 images                                                         & 822                            & D                             &  Turned On/Off       &              & 0.82 (Accuracy)                 & N/T $^{3}$                                                                             \\
+        Wang et al. \cite{wang2016appearance}                                & HOG, CNN                                           & 5,600 images                                                       & 5,600                          & D                             &  Turned On           &              & 0.89 (Accuracy)                 & N/T $^{3}$                                                                             \\
+        Kim \cite{kim2022detecting}                                        & YOLOv4, CNN, LSTM                                  & 189 videos                                                         & \multicolumn{1}{r}{-- $^{2}$}          & T                             &  Turned On/Off       &              & 0.91 (Accuracy)                 & N/T $^{3}$                                                                             \\
+        Li et al. \cite{li2020highly}                                 & YOLOv3 tiny (w/SPP)                                & 4,618 images   & 15,197                         & D, N                          &  Turned On           & \checkmark            & 0.89 (mAP50)                    & 15.87 (GTX-1060)                                                                \\
+        \midrule
+        \textbf{Ours}                                       & YOLOv8n                                            & 11,088 images & 30,444                         & D, N, T                       &  Turned On/Off       & \checkmark            & 0.76 (mAP50)                     & \begin{tabular}[c]{@{}c@{}}12.04 (Tesla T4)\\ 133.30 (Jetson Nano)\end{tabular} \\
+        \bottomrule
+    \multicolumn{9}{l}{$^{1}$ The abbreviations for condition mean the following respectively: D=Daytime, N=Nighttime, T=Tunnel.}\\
+    \multicolumn{9}{l}{$^{2}$ -- = Not reported.}\\
+    \multicolumn{9}{l}{$^{3}$ N/T = Not Tested.}
+    \end{tabular}
+    }
+\end{table}
 
+\textcolor{blue}{
+Table \ref{tab:comparison} provides a detailed description of the differences between our proposed model and the key existing brake light status detection studies.
+The algorithms listed in Table \ref{tab:comparison} are state-of-the-art learning-based brake light status detection algorithms. 
+The five studies listed at the top are divided into two or more stages, involving vehicle localization and classification of brake light status \cite{cui2015vision,nava2019collision,pirhonen2022brake,wang2016appearance,kim2022detecting}.
+The methodologies for each stage are sequentially presented under the second column, named proposed work.
+It is important to note that these five studies only present evaluation results for brake light status classification, excluding vehicle localization, and hence, the evaluation metrics such as detection rate, F1 score, or accuracy were used to describe the classification performance.
+On the other hand, both the algorithms presented by Li et al. \cite{li2020highly} and our proposed algorithm perform vehicle localization and brake light status classification simultaneously in a single-stage process.
+The evaluation results provided encompass both vehicle localization and brake light status classification, and mAP50 was used to describe both classification and localization performance.
+}
 
+\textcolor{blue}{
+When comparing the two mAP50 values in the Table \ref{tab:comparison}, Li et al.'s is higher than ours. However, one should be mindful that the number of classification classes and the dataset differ.
+The $0.89$ reported by Li et al. \cite{li2020highly} pertains only to the performance considering the turned on brake light status while our $0.76$ accounts for both turned on and off brake light status.
+In terms of data and sample size comparison, our research utilized the largest dataset. 
+Further more, our dataset includes diverse environmental conditions, including daytime, nighttime, and tunnel scenarios, which were not all simultaneously considered in the other studies.
+By integrating this vast amount data of diverse conditions, our experimental results effectively represent a wide range of real-world scenarios.
+}
+
+\textcolor{blue}{
+Among the existing key algorithms in Table \ref{tab:comparison}, the inference time of the algorithms is only presented through the study by Li et al. \cite{li2020highly}, which reported an impressive inference time of $15.87$ ms.
+However, it is important to note that their experiments were conducted on a high-performance GPU, GTX-1060, which may have contributed to the rapid inference speed.
+In contrast, our study not only utilized powerful GPU but also conducted experiments on edge device with limited resources.
+As the experimental environments differed, direct comparison of the inference speeds between the two algorithms is not feasible.
+Nonetheless, our study presented the inference time on edge device, showcasing real-time performance. This demonstration yields more practical research results, considering the constraints of edge devices and emphasizing the relevance of our findings for real-world applications.
+}

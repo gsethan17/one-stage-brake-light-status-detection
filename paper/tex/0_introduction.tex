@@ -18,6 +18,11 @@ Human drivers adjust their driving patterns based not only on distance and relat
 Autonomous driving systems aiming for enhanced safety should not overlook this fundamental information.
 Additionally, brake light status is particularly intuitive and possesses effective interpretability when communicating with humans.
 While distance, relative velocity, and TTC may provide clearer information among machines, brake light status information offers a more intuitive understanding.
+\textcolor{blue}{
+For example, when following a leading vehicle, a machine can maintain a much tighter gap with the leading vehicle by utilizing a combination of distance, relative velocity, and TTC than human drivers.
+However, since human drivers normally can not grasp the intricacies of distance, relative velocity, and TTC as tightly as the machines do, when the brake light of the leading vehicle illuminate, human drivers stop the accelerate and prepare for possible deceleration of the leading vehicle.
+Therefore, driving technology that considers brake light status as well can be more persuasive to humans.
+}
 Furthermore, considering the brake light status in ADAS can improve ride comfort \cite{pirhonen2022predictive}.
 By acquiring redundantly interpretable perceptual information, including brake light status, ADAS or autonomous driving systems can drive in a more human-like manner, ultimately reducing sensory conflicts and alleviating motion sickness.
 
@@ -42,7 +47,9 @@ To train the network, we collected over $11,000$ real-world driving images and m
 This dataset was used for transfer learning with YOLOv8. 
 We conducted transfer learning and evaluated the performance of the models in terms of model size, brake light status, and ambient lighting conditions.
 The real-time performance of the trained models was verified using an edge device, the Nvidia Jetson Nano, installed in the driving vehicle.
-This allowed us to assess the model's ability to make predictions in real-time while considering computational efficiency.
+\textcolor{blue}{The Jetson Nano is one of Nvidia's platform series designed for embedded applications of neural networks.
+Among the product line, it stands out as the smallest form factor with the lowest power consumption, making it widely used for real-time inference experiments, especially in resource-constrained environments \cite{assunccao2022real}.}
+This \textcolor{blue}{verification} allowed us to assess the model's ability to make predictions in real-time while considering computational efficiency.
 
 The main contributions in this study can be described as follows:
 \begin{itemize}
