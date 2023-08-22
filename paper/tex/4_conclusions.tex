@@ -2,7 +2,6 @@
 \label{sec:conclusions}
 
 
-% test results 최대 0.787, MS-COCO와 비교했을 때 분류해야하는 클래스의 차이는 있지만 정의된 임무에 대해서 높은 성능이라고 할 수 있다.
 In this paper, we have proposed an algorithm that utilizes transfer learning with YOLOv8 for the detecting of driving vehicles on the road and their brake light status.
 Our proposed approach offers novelty in three main aspects.
 First, we have constructed and publicly released a dataset specifically designed for detecting driving vehicles and brake light status on the road.
@@ -14,11 +13,6 @@ We have also provided detailed analysis considering various driving environments
 Lastly, we have validated the real-time capability of the proposed network by examining the inference time of all trained models on Nvidia Jetson Nano devices installed in the driving vehicle.
 By comparing the trade-off between detection accuracy and inference time, we have obtained a fast inference speed of $133.30$ ms along with a detection performance of mAP50 $0.766$.
 
-\textcolor{blue}{
-    \sout{Through this research, we aim to make autonomous driving technology safer, more interpretable, and more comfortable by proposing a fast and accurate brake light status detection network.
-In future work, we plan to conduct experimental research on the utilization of brake light status detection results for improving the safety, interpretability, and alleviation of motion sickness in autonomous driving systems.
-    }}
-\textcolor{blue}{
 We plan to continue our future research to propose more notable brake light status detection algorithm.
 One aspect of our future work involves improving the network architecture and considering sequential image inputs for more accurate and faster detection.
 In this study, we conducted transfer learning by keeping the YOLOv8 network structure unchanged while changing only the task for driving vehicle and brake light status detection.
@@ -29,4 +23,3 @@ Hence, we plan to improve detection performance in future research by considerin
 The other aspect of our future work will involve conducting experimental research on the utilization of brake light status detection results for improving the safety, interpretability, and alleviation of motion sickness in autonomous driving systems.
 One of the objectives of proposing a fast and accurate brake light status detection in this study is to enhance the safety, interpretability, and comfort of autonomous driving technology.
 In conclusion, we plan to conduct empirical studies applying the brake light status detection algorithm to autonomous driving systems.
-}
